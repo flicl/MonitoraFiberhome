@@ -34,11 +34,13 @@ from scrapli_client import FiberhomeClient
 from parsers import parse_onu_authorization
 
 # Configure logging to stderr (stdout is for JSON output)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    stream=sys.stderr,
-)
+# Only configure if not already configured by wrapper
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        stream=sys.stderr,
+    )
 logger = logging.getLogger(__name__)
 
 
