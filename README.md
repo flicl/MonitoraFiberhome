@@ -1,4 +1,4 @@
-# 📡 Template OLT Fiberhome RP1000 para Zabbix
+# 📡 Template OLT Fiberhome para Zabbix
 
 **Modelos compatíveis:** AN5116-06B / AN5516-01
 
@@ -529,4 +529,5 @@ MIT License
 
 - **Issues:** [GitHub Issues](https://github.com/flicl/MonitoraFiberhome/issues)
 - **Autor:** [@flicl](https://github.com/flicl)
+
 
