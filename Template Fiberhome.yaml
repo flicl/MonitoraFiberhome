@@ -1,0 +1,248 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: 'Templates/Network Devices'
+  templates:
+    - uuid: a308b3e8c9b24466b041695503434691
+      template: Template_OLT_Fiberhome_RP1000
+      name: 'Template OLT Fiberhome RP1000'
+      description: |
+        Template para monitoramento de OLTs Fiberhome RP1000+ (AN5116-06B / AN5516-01)
+        
+        Requer scripts externos:
+        - GetPONName.py (LLD SNMP)
+        - GetONUOnline.py (Telnet)
+        - GetONUSignal.py (Telnet)
+        
+        Macros obrigatórias:
+        {$OLT_USER} - Usuário Telnet
+        {$OLT_PASSWORD} - Senha Telnet
+        {$OLT_PORT} - Porta Telnet (padrão 23)
+        {$SNMP_COMMUNITY} - Comunidade SNMP
+        {$SNMP_PORT} - Porta SNMP (padrão 161)
+      groups:
+        - name: 'Templates/Network Devices'
+      items:
+        - uuid: 482093714ed940d1b2f0760dc7643d0b
+          name: 'Fan Status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.5875.800.3.60.2.1.1.21
+          key: fanAlarmStatus
+          delay: '300'
+          history: 7d
+          trends: 30d
+          tags:
+            - tag: Application
+              value: Chassi
+        - uuid: fb1fdb69d09846628ffa80cf45d2223c
+          name: 'Clientes Total OLT'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.5875.800.3.9.4.6.0
+          key: onuCount
+          delay: 60s
+          history: 90d
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: ONU
+        - uuid: e76eb912226f46b09308a1bde517a6be
+          name: Descrição
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.1.0
+          key: sysDescr.0
+          delay: '3600'
+          history: 30d
+          value_type: CHAR
+          trends: '0'
+          tags:
+            - tag: Application
+              value: Chassi
+        - uuid: f5652488bd08442b82b6122b3cee2f42
+          name: 'Temperatura da OLT'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.5875.800.3.9.4.5.0
+          key: sysTemperature
+          delay: '30'
+          history: 7d
+          trends: 30d
+          units: º
+          tags:
+            - tag: Application
+              value: Chassi
+        - uuid: 7c656518a8fa4128b876e3a6eb24ccd8
+          name: 'Uptime da OLT'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: sysUpTimeInstance
+          delay: '30'
+          history: 7d
+          trends: 30d
+          units: uptime
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: Chassi
+        - uuid: c5325854817d4760b298418302194372
+          name: 'Total ONUs Offline (Global)'
+          type: TRAP
+          key: TotalOntOffline
+          delay: '0'
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: Application
+              value: 'Fiberhome Overview'
+        - uuid: 8784725350414777b7320092c2539074
+          name: 'Total ONUs Online (Global)'
+          type: TRAP
+          key: TotalOntOnline
+          delay: '0'
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: Application
+              value: 'Fiberhome Overview'
+        - uuid: 4024328594244908ba67142445831557
+          name: 'Total ONUs Provisionadas (Global)'
+          type: TRAP
+          key: TotalOntProvisioned
+          delay: '0'
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: Application
+              value: 'Fiberhome Overview'
+      discovery_rules:
+        - uuid: 2257007727144e59bf46162507663242
+          name: 'PON Discovery'
+          type: EXTERNAL
+          key: 'GetPONName.py[{HOST.CONN},{$SNMP_COMMUNITY},{HOST.HOST},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT},{$SNMP_PORT}]'
+          delay: 1h
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#PONNAME}'
+                value: '.*'
+                formulaid: A
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          item_prototypes:
+            - uuid: 8c038374246440268584825946394235
+              name: 'Melhor Sinal dBm - PON {#PONNAME}'
+              type: TRAP
+              key: 'OntBestSinal.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              trends: 90d
+              units: dBm
+              tags:
+                - tag: Application
+                  value: 'PON Signals'
+            - uuid: 7c038374246440268584825946394236
+              name: 'Média Sinal dBm - PON {#PONNAME}'
+              type: TRAP
+              key: 'OntMediaSinal.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              trends: 90d
+              units: dBm
+              tags:
+                - tag: Application
+                  value: 'PON Signals'
+            - uuid: 4d038374246440268584825946394239
+              name: 'ONUs Offline - PON {#PONNAME}'
+              type: TRAP
+              key: 'OntOffline.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              tags:
+                - tag: Application
+                  value: 'PON Status'
+            - uuid: 3d038374246440268584825946394240
+              name: 'ONUs Online - PON {#PONNAME}'
+              type: TRAP
+              key: 'OntOnline.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              tags:
+                - tag: Application
+                  value: 'PON Status'
+            - uuid: 6c038374246440268584825946394237
+              name: 'Pior Sinal dBm - PON {#PONNAME}'
+              type: TRAP
+              key: 'OntPoorSinal.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              trends: 90d
+              units: dBm
+              tags:
+                - tag: Application
+                  value: 'PON Signals'
+              trigger_prototypes:
+                - uuid: 5c038374246440268584825946394238
+                  expression: 'last(/Template_OLT_Fiberhome_RP1000/OntPoorSinal.[{#PONNAME}])>30'
+                  name: 'Sinal Crítico (> -30dBm) na PON {#PONNAME}'
+                  priority: HIGH
+                  description: 'Pior sinal da PON está acima de 30dBm (perda alta).'
+            - uuid: 2d038374246440268584825946394241
+              name: 'ONUs Provisionadas - PON {#PONNAME}'
+              type: TRAP
+              key: 'OntProvisioned.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              tags:
+                - tag: Application
+                  value: 'PON Status'
+          graph_prototypes:
+            - uuid: 1a038374246440268584825946394242
+              name: 'Sinais Ópticos - PON {#PONNAME}'
+              graph_items:
+                - color: 00FF00
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'OntBestSinal.[{#PONNAME}]'
+                - sortorder: '1'
+                  color: 0000FF
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'OntMediaSinal.[{#PONNAME}]'
+                - sortorder: '2'
+                  color: FF0000
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'OntPoorSinal.[{#PONNAME}]'
+            - uuid: 0b038374246440268584825946394243
+              name: 'Status ONUs - PON {#PONNAME}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: 00AA00
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'OntOnline.[{#PONNAME}]'
+                - sortorder: '1'
+                  drawtype: BOLD_LINE
+                  color: FF0000
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'OntOffline.[{#PONNAME}]'
+      macros:
+        - macro: '{$OLT_PASSWORD}'
+          value: GEPON
+        - macro: '{$OLT_PORT}'
+          value: '23'
+        - macro: '{$OLT_USER}'
+          value: GEPON
+        - macro: '{$SNMP_COMMUNITY}'
+          value: public
+        - macro: '{$SNMP_PORT}'
+          value: '161'
