@@ -206,10 +206,10 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_ports[?(@.pon_name == "{#PONNAME}")].offline'
+                    - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+                    - 'const pon = "{#PONNAME}"; const found = value.find(v => v.pon_name === pon); return found ? found.offline : 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -226,10 +226,10 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_ports[?(@.pon_name == "{#PONNAME}")].online'
+                    - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+                    - 'const pon = "{#PONNAME}"; const found = value.find(v => v.pon_name === pon); return found ? found.online : 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -246,10 +246,10 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_ports[?(@.pon_name == "{#PONNAME}")].provisioned'
+                    - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+                    - 'const pon = "{#PONNAME}"; const found = value.find(v => v.pon_name === pon); return found ? found.provisioned : 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -271,10 +271,10 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_signals[?(@.pon_name == "{#PONNAME}")].best_signal'
+                    - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+                    - 'const pon = "{#PONNAME}"; const found = value.find(v => v.pon_name === pon); return found ? found.best_signal : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -293,10 +293,10 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_signals[?(@.pon_name == "{#PONNAME}")].median_signal'
+                    - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+                    - 'const pon = "{#PONNAME}"; const found = value.find(v => v.pon_name === pon); return found ? found.median_signal : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -315,10 +315,10 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_signals[?(@.pon_name == "{#PONNAME}")].poor_signal'
+                    - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+                    - 'const pon = "{#PONNAME}"; const found = value.find(v => v.pon_name === pon); return found ? found.poor_signal : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
