@@ -9,13 +9,22 @@ import statistics
 from dataclasses import dataclass
 from typing import Any
 
-from .constants import (
-    PATTERN_ONU_STATUS,
-    PATTERN_SIGNAL,
-    PONStats,
-    PONSignals,
-    ONUStatus,
-)
+try:
+    from .constants import (
+        PATTERN_ONU_STATUS,
+        PATTERN_SIGNAL,
+        PONStats,
+        PONSignals,
+        ONUStatus,
+    )
+except ImportError:
+    from constants import (
+        PATTERN_ONU_STATUS,
+        PATTERN_SIGNAL,
+        PONStats,
+        PONSignals,
+        ONUStatus,
+    )
 
 
 def parse_onu_authorization(output: str) -> dict[str, PONStats]:

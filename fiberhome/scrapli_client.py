@@ -14,16 +14,28 @@ import logging
 import re
 from typing import Any
 
-from .constants import (
-    TELNET_TIMEOUT,
-    CMD_WAIT_SHORT,
-    CMD_WAIT_LONG,
-    CMD_CD_SERVICE,
-    CMD_CD_ONU,
-    CMD_CD_CARD,
-    CMD_CD_UP,
-    CMD_TERMINAL_LENGTH_0,
-)
+try:
+    from .constants import (
+        TELNET_TIMEOUT,
+        CMD_WAIT_SHORT,
+        CMD_WAIT_LONG,
+        CMD_CD_SERVICE,
+        CMD_CD_ONU,
+        CMD_CD_CARD,
+        CMD_CD_UP,
+        CMD_TERMINAL_LENGTH_0,
+    )
+except ImportError:
+    from constants import (
+        TELNET_TIMEOUT,
+        CMD_WAIT_SHORT,
+        CMD_WAIT_LONG,
+        CMD_CD_SERVICE,
+        CMD_CD_ONU,
+        CMD_CD_CARD,
+        CMD_CD_UP,
+        CMD_TERMINAL_LENGTH_0,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -78,35 +90,66 @@ class FiberhomeClient:
             timeout=self.timeout,
         )
 
-        # Wait for Login: prompt
-        await self._wait_for("Login:")
-        await self._send(self.username)
-        await asyncio.sleep(CMD_WAIT_SHORT)
+        # Wait for initial banner and login prompt
+        await asyncio.sleep(1)
+        initial_data = await self._read_until_blocking()
 
-        # Wait for Password: prompt
-        await self._wait_for("Password:")
-        await self._send(self.password)
+        # Check if we got Login and Password prompts together
+        if "assword:" in initial_data.lower():
+            # Login and Password already shown, send username first
+            await self._send(self.username)
+            await asyncio.sleep(CMD_WAIT_SHORT)
+            await self._wait_for("assword:", clear_buffer=False)
+            await self._send(self.password)
+        elif "ogin:" in initial_data.lower():
+            # Only Login shown, normal flow
+            await self._send(self.username)
+            await asyncio.sleep(CMD_WAIT_SHORT)
+            await self._wait_for("assword:")
+            await self._send(self.password)
+
         await asyncio.sleep(CMD_WAIT_SHORT)
 
         # Wait for User> prompt
-        await self._wait_for("User>")
+        await self._wait_for("ser>")
 
         # Escalate to admin mode
         await self._send("EN")
         await asyncio.sleep(CMD_WAIT_SHORT)
 
         # Wait for Password: prompt (admin)
-        await self._wait_for("Password:")
+        await self._wait_for("assword:")
         await self._send(self.password)
         await asyncio.sleep(CMD_WAIT_SHORT)
 
         # Wait for Admin# prompt
-        await self._wait_for("Admin#")
+        await self._wait_for("dmin#")
 
         # Disable pagination
         await self._setup_terminal()
 
         logger.info(f"Successfully logged in to {self.host}")
+
+    async def _read_until_blocking(self, timeout: float = 3.0) -> str:
+        """Read all available data without waiting for specific pattern."""
+        if not self._reader:
+            raise RuntimeError("Not connected")
+
+        try:
+            while True:
+                chunk = await asyncio.wait_for(
+                    self._reader.read(4096),
+                    timeout=timeout,
+                )
+                if not chunk:
+                    break
+                self._buffer += chunk.decode("utf-8", errors="ignore")
+        except asyncio.TimeoutError:
+            pass  # Expected - no more data
+
+        result = self._buffer
+        logger.debug(f"Read until blocking: {repr(result[:500])}")
+        return result
 
     async def _send(self, data: str) -> None:
         """Send data to the connection."""
@@ -115,13 +158,14 @@ class FiberhomeClient:
         self._writer.write((data + "\n").encode("utf-8"))
         await self._writer.drain()
 
-    async def _wait_for(self, pattern: str, timeout: float | None = None) -> str:
+    async def _wait_for(self, pattern: str, timeout: float | None = None, clear_buffer: bool = True) -> str:
         """
         Wait for a pattern in the output.
 
         Args:
             pattern: String or regex pattern to wait for
             timeout: Timeout in seconds
+            clear_buffer: Whether to clear buffer after match
 
         Returns:
             Data received before pattern match
@@ -130,10 +174,17 @@ class FiberhomeClient:
             raise RuntimeError("Not connected")
 
         timeout = timeout or self.timeout
-        regex = re.compile(re.escape(pattern))
+        regex = re.compile(re.escape(pattern), re.IGNORECASE)
 
         try:
             while True:
+                # Check existing buffer first
+                if regex.search(self._buffer):
+                    result = self._buffer
+                    if clear_buffer:
+                        self._buffer = ""
+                    return result
+
                 # Read available data
                 chunk = await asyncio.wait_for(
                     self._reader.read(4096),
@@ -144,11 +195,9 @@ class FiberhomeClient:
 
                 self._buffer += chunk.decode("utf-8", errors="ignore")
 
-                # Check if pattern found
-                if regex.search(self._buffer):
-                    result = self._buffer
-                    self._buffer = ""
-                    return result
+                # Debug: show what we received
+                logger.debug(f"Received: {repr(self._buffer[-200:])}")
+
         except asyncio.TimeoutError:
             logger.error(f"Timeout waiting for pattern: {pattern}")
             logger.debug(f"Buffer content: {self._buffer[:500]}")
