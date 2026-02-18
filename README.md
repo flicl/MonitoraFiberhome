@@ -25,44 +25,36 @@ Monitoramento completo de OLTs Fiberhome via Zabbix com:
 
 ## 🏗️ Arquitetura
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      ZABBIX SERVER                               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────┐    ┌──────────────────────────────────┐   │
-│  │  GetPONName.py  │    │  fiberhome_olt_status.py         │   │
-│  │  (SNMP LLD)     │    │  (Master Item - JSON)            │   │
-│  │  Interval: 1h   │    │  Interval: 6min                  │   │
-│  └────────┬────────┘    └──────────────┬───────────────────┘   │
-│           │                            │                        │
-│           ▼                            ▼                        │
-│    ┌──────────────┐           ┌───────────────────────┐        │
-│    │ Descobre     │           │ Dependent Items:      │        │
-│    │ {#PONNAME}   │           │ • OntOnline.[PON]     │        │
-│    │ {#PONSLOT}   │           │ • OntOffline.[PON]    │        │
-│    │ {#PONPORT}   │           │ • OntProvisioned.[PON]│        │
-│    └──────────────┘           │ • TotalOntOnline      │        │
-│                               │ • TotalOntOffline     │        │
-│  ┌─────────────────────────┐  │ • TotalOntProvisioned │        │
-│  │ fiberhome_olt_signals.py│  └───────────────────────┘        │
-│  │ (Master Item - JSON)    │                                   │
-│  │ Interval: 2h            │  ┌───────────────────────┐        │
-│  └────────────┬────────────┘  │ Dependent Items:      │        │
-│               │               │ • OntBestSinal.[PON]  │        │
-│               ▼               │ • OntPoorSinal.[PON]  │        │
-│    ┌────────────────────┐     │ • OntMediaSinal.[PON] │        │
-│    │ JSONPath Extract   │     └───────────────────────┘        │
-│    └────────────────────┘                                      │
-│                                                                  │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-                            ▼
-              ┌──────────────────────────┐
-              │   OLT FIBERHOME          │
-              │   (Telnet + SNMP)        │
-              │   Porta 23 + 161         │
-              └──────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph ZABBIX["ZABBIX SERVER"]
+        subgraph LLD["Descoberta SNMP"]
+            LLD_SCRIPT["GetPONName.py<br/>(SNMP LLD)<br/>Interval: 1h"]
+        end
+
+        subgraph STATUS["Status ONUs"]
+            STATUS_MASTER["fiberhome_olt_status.py<br/>(Master Item - JSON)<br/>Interval: 6min"]
+            STATUS_DEPS["Dependent Items:<br/>• OntOnline.[PON]<br/>• OntOffline.[PON]<br/>• OntProvisioned.[PON]<br/>• TotalOntOnline<br/>• TotalOntOffline<br/>• TotalOntProvisioned"]
+        end
+
+        subgraph SIGNALS["Sinais Ópticos"]
+            SIGNALS_MASTER["fiberhome_olt_signals.py<br/>(Master Item - JSON)<br/>Interval: 2h"]
+            SIGNALS_DEPS["Dependent Items:<br/>• OntBestSinal.[PON]<br/>• OntPoorSinal.[PON]<br/>• OntMediaSinal.[PON]"]
+        end
+    end
+
+    subgraph OLT["OLT FIBERHOME"]
+        OLT_TELNET["Telnet<br/>Porta 23"]
+        OLT_SNMP["SNMP<br/>Porta 161"]
+    end
+
+    LLD_SCRIPT -->|"Descobre<br/>{#PONNAME}<br/>{#PONSLOT}<br/>{#PONPORT}"| STATUS_DEPS
+    STATUS_MASTER --> STATUS_DEPS
+    SIGNALS_MASTER --> SIGNALS_DEPS
+
+    LLD_SCRIPT -->|"SNMP"| OLT_SNMP
+    STATUS_MASTER -->|"Telnet"| OLT_TELNET
+    SIGNALS_MASTER -->|"Telnet"| OLT_TELNET
 ```
 
 ### ✅ Benefícios
