@@ -206,7 +206,7 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_ports[?(@.pon_name == ''{#PONNAME}'')].offline'
+                    - '$.data.pon_ports[?(@.pon_name == "{#PONNAME}")].offline'
                 - type: JAVASCRIPT
                   parameters:
                     - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
@@ -226,7 +226,7 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_ports[?(@.pon_name == ''{#PONNAME}'')].online'
+                    - '$.data.pon_ports[?(@.pon_name == "{#PONNAME}")].online'
                 - type: JAVASCRIPT
                   parameters:
                     - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
@@ -246,7 +246,7 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_ports[?(@.pon_name == ''{#PONNAME}'')].provisioned'
+                    - '$.data.pon_ports[?(@.pon_name == "{#PONNAME}")].provisioned'
                 - type: JAVASCRIPT
                   parameters:
                     - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
@@ -271,7 +271,7 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_signals[?(@.pon_name == ''{#PONNAME}'')].best_signal'
+                    - '$.data.pon_signals[?(@.pon_name == "{#PONNAME}")].best_signal'
                 - type: JAVASCRIPT
                   parameters:
                     - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
@@ -293,7 +293,7 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_signals[?(@.pon_name == ''{#PONNAME}'')].median_signal'
+                    - '$.data.pon_signals[?(@.pon_name == "{#PONNAME}")].median_signal'
                 - type: JAVASCRIPT
                   parameters:
                     - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
@@ -315,7 +315,7 @@ zabbix_export:
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.data.pon_signals[?(@.pon_name == ''{#PONNAME}'')].poor_signal'
+                    - '$.data.pon_signals[?(@.pon_name == "{#PONNAME}")].poor_signal'
                 - type: JAVASCRIPT
                   parameters:
                     - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
