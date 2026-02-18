@@ -119,7 +119,8 @@ cd MonitoraFiberhome
 ### Passo 2: Executar o script de deploy
 
 ```bash
-sudo ./deploy.sh --backup
+chmod +x deploy.sh
+./deploy.sh
 ```
 
 **O que o script faz:**
@@ -528,3 +529,4 @@ MIT License
 
 - **Issues:** [GitHub Issues](https://github.com/flicl/MonitoraFiberhome/issues)
 - **Autor:** [@flicl](https://github.com/flicl)
+
