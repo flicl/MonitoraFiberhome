@@ -27,34 +27,56 @@ Monitoramento completo de OLTs Fiberhome via Zabbix com:
 
 ```mermaid
 flowchart TB
-    subgraph ZABBIX["ZABBIX SERVER"]
-        subgraph LLD["Descoberta SNMP"]
-            LLD_SCRIPT["GetPONName.py<br/>(SNMP LLD)<br/>Interval: 1h"]
+    %% Estilos customizados
+    classDef zabbix fill:#d40000,stroke:#a30000,color:#fff,stroke-width:3px
+    classDef lld fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    classDef status fill:#4dabf7,stroke:#1971c2,color:#fff
+    classDef signal fill:#69db7c,stroke:#2f9e44,color:#fff
+    classDef olt fill:#495057,stroke:#212529,color:#fff,stroke-width:3px
+    classDef protocol fill:#868e96,stroke:#495057,color:#fff
+    classDef output fill:#e9ecef,stroke:#adb5bd,color:#212529
+
+    %% ZABBIX SERVER
+    subgraph ZABBIX["🖥️ ZABBIX SERVER"]
+        direction TB
+
+        subgraph LLD["🔍 Descoberta SNMP (1h)"]
+            LLD_SCRIPT["GetPONName.py<br/>Coleta via SNMP"]:::lld
         end
 
-        subgraph STATUS["Status ONUs"]
-            STATUS_MASTER["fiberhome_olt_status.py<br/>(Master Item - JSON)<br/>Interval: 6min"]
-            STATUS_DEPS["Dependent Items:<br/>• OntOnline.[PON]<br/>• OntOffline.[PON]<br/>• OntProvisioned.[PON]<br/>• TotalOntOnline<br/>• TotalOntOffline<br/>• TotalOntProvisioned"]
+        subgraph STATUS["📊 Status ONUs (6min)"]
+            STATUS_MASTER["fiberhome_olt_status.py<br/>Master Item JSON"]:::status
+            STATUS_DEPS["📈 Dependent Items<br/>• OntOnline.[PON]<br/>• OntOffline.[PON]<br/>• OntProvisioned.[PON]<br/>• TotalOntOnline/Offline"]:::output
         end
 
-        subgraph SIGNALS["Sinais Ópticos"]
-            SIGNALS_MASTER["fiberhome_olt_signals.py<br/>(Master Item - JSON)<br/>Interval: 2h"]
-            SIGNALS_DEPS["Dependent Items:<br/>• OntBestSinal.[PON]<br/>• OntPoorSinal.[PON]<br/>• OntMediaSinal.[PON]"]
+        subgraph SIGNALS["📡 Sinais Ópticos (2h)"]
+            SIGNALS_MASTER["fiberhome_olt_signals.py<br/>Master Item JSON"]:::signal
+            SIGNALS_DEPS["📉 Dependent Items<br/>• Melhor Sinal dBm<br/>• Pior Sinal dBm<br/>• Média Sinal dBm"]:::output
         end
     end
 
-    subgraph OLT["OLT FIBERHOME"]
-        OLT_TELNET["Telnet<br/>Porta 23"]
-        OLT_SNMP["SNMP<br/>Porta 161"]
+    %% OLT FIBERHOME
+    subgraph OLT["🌐 OLT FIBERHOME"]
+        OLT_TELNET["🔌 TELNET<br/>Porta 23"]:::protocol
+        OLT_SNMP["📡 SNMP<br/>Porta 161"]:::protocol
+        OLT_BOX[""]:::olt
     end
 
-    LLD_SCRIPT -->|"Descobre<br/>{#PONNAME}<br/>{#PONSLOT}<br/>{#PONPORT}"| STATUS_DEPS
+    %% Conexões SNMP (vermelho)
+    LLD_SCRIPT -.->|"SNMP Get"| OLT_SNMP
+    linkStyle 0 stroke:#ff6b6b,stroke-width:2px
+
+    %% Conexões Telnet (azul)
+    STATUS_MASTER ==>|"Telnet CLI"| OLT_TELNET
+    linkStyle 1 stroke:#4dabf7,stroke-width:2px
+
+    SIGNALS_MASTER ==>|"Telnet CLI"| OLT_TELNET
+    linkStyle 2 stroke:#69db7c,stroke-width:2px
+
+    %% Fluxo interno Zabbix
+    LLD_SCRIPT -->|"Descobre PONs<br/>{#PONNAME}"| STATUS_DEPS
     STATUS_MASTER --> STATUS_DEPS
     SIGNALS_MASTER --> SIGNALS_DEPS
-
-    LLD_SCRIPT -->|"SNMP"| OLT_SNMP
-    STATUS_MASTER -->|"Telnet"| OLT_TELNET
-    SIGNALS_MASTER -->|"Telnet"| OLT_TELNET
 ```
 
 ### ✅ Benefícios
