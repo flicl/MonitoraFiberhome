@@ -1,100 +1,259 @@
-# Template OLT Fiberhome RP1000 para Zabbix
-**Modelo confirmado: AN5116-06B / AN5516-01**
+# 📡 Template OLT Fiberhome RP1000 para Zabbix
 
-Monitoramento de OLTs Fiberhome via Zabbix, com descoberta automática de portas PON (SNMP LLD) e coleta de métricas de ONUs via Telnet.
+**Modelos compatíveis:** AN5116-06B / AN5516-01
 
-## Arquitetura (v2.0)
+Monitoramento completo de OLTs Fiberhome via Zabbix com:
+- 📊 Descoberta automática de portas PON (SNMP LLD)
+- 📈 Coleta de métricas de ONUs via Telnet
+- 🔄 Arquitetura Pull (Zabbix chama os scripts)
+- ⚡ Async/await para I/O não-bloqueante
+
+---
+
+## 📋 Índice
+
+- [Arquitetura](#-arquitetura)
+- [Requisitos](#-requisitos)
+- [Tutorial de Instalação](#-tutorial-de-instalação)
+- [Configuração no Zabbix](#-configuração-no-zabbix)
+- [Testando os Scripts](#-testando-os-scripts)
+- [Métricas Coletadas](#-métricas-coletadas)
+- [Migração da Versão Antiga](#-migração-da-versão-antiga)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+## 🏗️ Arquitetura
 
 ```
-Zabbix Server (Pull Model)
-  ├─ GetPONName.py (EXTERNAL, 1h) → JSON LLD [SNMP]
-  ├─ fiberhome_olt_status.py (EXTERNAL, 6m) → JSON Master Item
-  │    └─ Dependent Items: OntOnline, OntOffline, OntProvisioned (por PON)
-  └─ fiberhome_olt_signals.py (EXTERNAL, 2h) → JSON Master Item
-       └─ Dependent Items: OntBestSinal, OntPoorSinal, OntMediaSinal (por PON)
+┌─────────────────────────────────────────────────────────────────┐
+│                      ZABBIX SERVER                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────┐    ┌──────────────────────────────────┐   │
+│  │  GetPONName.py  │    │  fiberhome_olt_status.py         │   │
+│  │  (SNMP LLD)     │    │  (Master Item - JSON)            │   │
+│  │  Interval: 1h   │    │  Interval: 6min                  │   │
+│  └────────┬────────┘    └──────────────┬───────────────────┘   │
+│           │                            │                        │
+│           ▼                            ▼                        │
+│    ┌──────────────┐           ┌───────────────────────┐        │
+│    │ Descobre     │           │ Dependent Items:      │        │
+│    │ {#PONNAME}   │           │ • OntOnline.[PON]     │        │
+│    │ {#PONSLOT}   │           │ • OntOffline.[PON]    │        │
+│    │ {#PONPORT}   │           │ • OntProvisioned.[PON]│        │
+│    └──────────────┘           │ • TotalOntOnline      │        │
+│                               │ • TotalOntOffline     │        │
+│  ┌─────────────────────────┐  │ • TotalOntProvisioned │        │
+│  │ fiberhome_olt_signals.py│  └───────────────────────┘        │
+│  │ (Master Item - JSON)    │                                   │
+│  │ Interval: 2h            │  ┌───────────────────────┐        │
+│  └────────────┬────────────┘  │ Dependent Items:      │        │
+│               │               │ • OntBestSinal.[PON]  │        │
+│               ▼               │ • OntPoorSinal.[PON]  │        │
+│    ┌────────────────────┐     │ • OntMediaSinal.[PON] │        │
+│    │ JSONPath Extract   │     └───────────────────────┘        │
+│    └────────────────────┘                                      │
+│                                                                  │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+                            ▼
+              ┌──────────────────────────┐
+              │   OLT FIBERHOME          │
+              │   (Telnet + SNMP)        │
+              │   Porta 23 + 161         │
+              └──────────────────────────┘
 ```
 
-**Benefícios da nova arquitetura:**
-- ✅ Zero zabbix_sender (push passivo → pull ativo)
-- ✅ Zero cron dependencies
-- ✅ Uma conexão Telnet por coleta
-- ✅ Async/await para I/O não-bloqueante
-- ✅ JSON testável manualmente
-- ✅ Python 3.10+ (stdlib only, sem dependências externas)
+### ✅ Benefícios
 
-## Instalação
+| Antes (v1.0) | Depois (v2.0) |
+|--------------|---------------|
+| zabbix_sender (push) | Pull via External Check |
+| Cron dinâmico por host | Zero cron |
+| telnetlib (deprecated Python 3.13) | asyncio nativo |
+| Múltiplas conexões por coleta | Uma conexão por coleta |
+| 0.3s sleep por envio | I/O não-bloqueante |
 
-### Método 1: Script de Deploy (Recomendado)
+---
 
-```sh
-# Clone o repositório
-git clone https://github.com/netoadmredes/template-olt_fiberhome
-cd template-olt_fiberhome
+## 💻 Requisitos
 
-# Execute o deploy (como root)
+### Servidor Zabbix
+
+| Requisito | Versão Mínima |
+|-----------|---------------|
+| Zabbix Server | 6.0+ |
+| Python | 3.10+ |
+| Sistema | Linux (systemd) |
+
+### Pacotes necessários
+
+```bash
+# Debian/Ubuntu
+apt update
+apt install -y python3 snmp zabbix-sender
+
+# RHEL/CentOS
+yum install -y python39 net-snmp zabbix-sender
+```
+
+### OLT Fiberhome
+
+- SNMP v1/v2c habilitado
+- Acesso Telnet na porta 23
+- Usuário/senha de autenticação
+
+---
+
+## 📦 Tutorial de Instalação
+
+### Passo 1: Clonar o repositório
+
+```bash
+cd /tmp
+git clone https://github.com/flicl/MonitoraFiberhome.git
+cd MonitoraFiberhome
+```
+
+### Passo 2: Executar o script de deploy
+
+```bash
 sudo ./deploy.sh --backup
-
-# O script:
-# - Verifica Python >= 3.10
-# - Copia scripts para /usr/lib/zabbix/externalscripts/fiberhome/
-# - Configura permissões
-# - Faz backup dos scripts legados (com --backup)
 ```
 
-### Método 2: Manual
+**O que o script faz:**
+- ✅ Verifica Python >= 3.10
+- ✅ Cria diretório `/usr/lib/zabbix/externalscripts/fiberhome/`
+- ✅ Copia todos os scripts
+- ✅ Configura permissões (zabbix:zabbix)
+- ✅ Faz backup dos scripts legados (se existirem)
 
-```sh
-# Dependências (Python 3.10+ é o único requisito)
-python3 --version  # deve ser >= 3.10
-
-# Instalar os scripts
-mkdir -p /usr/lib/zabbix/externalscripts/fiberhome
-cp fiberhome/*.py /usr/lib/zabbix/externalscripts/fiberhome/
-cp GetPONName.py /usr/lib/zabbix/externalscripts/
-chmod +x /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_*.py
-chmod +x /usr/lib/zabbix/externalscripts/GetPONName.py
-chown -R zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome
+**Saída esperada:**
+```
+[INFO] Checking Python version...
+[INFO] Python version: 3.11.2
+[INFO] Python version OK (no external dependencies required)
+[INFO] Creating directory structure...
+[INFO] Deploying scripts...
+[INFO] Scripts deployed successfully
+[INFO] Testing script syntax...
+[INFO] Syntax check passed
 ```
 
-## Configuração no Zabbix
+### Passo 3: Verificar instalação
 
-### 1. Importar o Template
-1. No Zabbix, vá em **Configuration > Templates > Import**.
-2. Selecione o arquivo `Template Fiberhome.yaml`.
-3. Clique em **Import**.
-4. Associe o template `Template OLT Fiberhome RP1000` ao seu host.
+```bash
+ls -la /usr/lib/zabbix/externalscripts/fiberhome/
+```
 
-### 2. Configurar Macros do Host
+**Deve mostrar:**
+```
+drwxr-xr-x  zabbix zabbix  4096 ./
+-rw-r--r--  1 zabbix zabbix   403 __init__.py
+-rw-r--r--  1 zabbix zabbix  2037 constants.py
+-rwxr-xr-x  1 zabbix zabbix  4614 fiberhome_olt_signals.py
+-rwxr-xr-x  1 zabbix zabbix  4622 fiberhome_olt_status.py
+-rw-r--r--  1 zabbix zabbix  3939 parsers.py
+-rw-r--r--  1 zabbix zabbix  6155 scrapli_client.py
+```
 
-| Macro | Valor padrão | Descrição |
-|---|---|---|
-| `{$SNMP_COMMUNITY}` | `public` | Community SNMP |
+---
+
+## ⚙️ Configuração no Zabbix
+
+### Passo 1: Importar o Template
+
+1. Acesse o Zabbix Web UI
+2. Vá em **Configuration → Templates**
+3. Clique em **Import**
+4. Selecione o arquivo `Template Fiberhome.yaml`
+5. Clique em **Import**
+
+### Passo 2: Criar o Host da OLT
+
+1. **Configuration → Hosts → Create host**
+
+| Campo | Valor |
+|-------|-------|
+| Host name | `OLT-Fiberhome-01` |
+| Groups | `Network Devices` |
+| Interfaces → Agent | IP da OLT |
+
+2. **Vá na aba Templates**
+
+| Campo | Valor |
+|-------|-------|
+| Link new templates | `Template OLT Fiberhome RP1000` |
+
+3. **Vá na aba Macros**
+
+| Macro | Valor | Descrição |
+|-------|-------|-----------|
+| `{$SNMP_COMMUNITY}` | `public` | Comunidade SNMP |
 | `{$SNMP_PORT}` | `161` | Porta SNMP |
 | `{$OLT_USER}` | `GEPON` | Usuário Telnet |
 | `{$OLT_PASSWORD}` | `GEPON` | Senha Telnet |
 | `{$OLT_PORT}` | `23` | Porta Telnet |
 
-### 3. Itens do Template
+4. Clique em **Add**
 
-#### Master Items (EXTERNAL)
-| Nome | Chave | Intervalo | Output |
-|---|---|---|---|
-| OLT Status - Master Item | `fiberhome_olt_status.py[...]` | 6m | JSON |
-| OLT Signals - Master Item | `fiberhome_olt_signals.py[...]` | 2h | JSON |
-| PON Discovery | `GetPONName.py[...]` | 1h | JSON LLD |
+### Passo 3: Aguardar descoberta
 
-#### Dependent Items (extraem do JSON via JSONPath)
-| Chave | JSONPath | Master Item |
-|---|---|---|
-| `TotalOntOnline` | `$.data.totals.online` | Status |
-| `TotalOntOffline` | `$.data.totals.offline` | Status |
-| `TotalOntProvisioned` | `$.data.totals.provisioned` | Status |
-| `OntOnline.[{#PONNAME}]` | `$.data.pon_ports[?(@.pon_name=='{#PONNAME}')].online` | Status |
-| `OntBestSinal.[{#PONNAME}]` | `$.data.pon_signals[?(@.pon_name=='{#PONNAME}')].best_signal` | Signals |
+- A descoberta de PONs roda a cada **1 hora**
+- Os itens de status coletam a cada **6 minutos**
+- Os sinais ópticos coletam a cada **2 horas**
 
-## JSON Output Schema
+Para forçar descoberta imediata:
+1. **Configuration → Hosts → [OLT] → Discovery**
+2. Clique em **Execute now**
 
-### fiberhome_olt_status.py
+---
+
+## 🧪 Testando os Scripts
+
+### Teste de Conectividade SNMP
+
+```bash
+snmpwalk -v 1 -c public 186.209.111.0 1.3.6.1.4.1.5875.800.3.9.3.4.1.2
+```
+
+**Saída esperada:**
+```
+iso.3.6.1.4.1.5875.800.3.9.3.4.1.2.34078720 = STRING: "PON 1/1"
+iso.3.6.1.4.1.5875.800.3.9.3.4.1.2.34603008 = STRING: "PON 1/2"
+```
+
+### Teste do LLD (Descoberta de PONs)
+
+```bash
+python3 /usr/lib/zabbix/externalscripts/GetPONName.py \
+  186.209.111.0 public OLT-TESTE GEPON GEPON 23 161 | jq .
+```
+
+**Saída esperada:**
+```json
+{
+  "data": [
+    {
+      "{#PONNAME}": "1/1",
+      "{#PONALIAS}": "",
+      "{#PONSLOT}": "1",
+      "{#PONPORT}": "1",
+      "{#INDEX}": "34078720"
+    }
+  ]
+}
+```
+
+### Teste do Status de ONUs
+
+```bash
+python3 /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_status.py \
+  186.209.111.0 GEPON GEPON 23 | jq .
+```
+
+**Saída esperada:**
 ```json
 {
   "data": {
@@ -123,7 +282,14 @@ chown -R zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome
 }
 ```
 
-### fiberhome_olt_signals.py
+### Teste dos Sinais Ópticos
+
+```bash
+python3 /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_signals.py \
+  186.209.111.0 GEPON GEPON 23 | jq .
+```
+
+**Saída esperada:**
 ```json
 {
   "data": {
@@ -139,68 +305,181 @@ chown -R zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome
       }
     ],
     "metadata": {
-      "timestamp": "2026-02-18T12:34:56Z",
-      "collection_time_ms": 8500,
-      "olt_ip": "186.209.111.0",
       "success": true
     }
   }
 }
 ```
 
-## Testando Manualmente
+---
 
-```sh
-# Testar coleta de status
-python3 /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_status.py \
-  186.209.111.0 GEPON GEPON 23 | jq .
+## 📊 Métricas Coletadas
 
-# Testar coleta de sinais
-python3 /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_signals.py \
-  186.209.111.0 GEPON GEPON 23 | jq .
+### Itens Globais
 
-# Testar LLD SNMP
-python3 /usr/lib/zabbix/externalscripts/GetPONName.py \
-  186.209.111.0 public OLT_HOSTNAME GEPON GEPON 23 161 | jq .
+| Item | Descrição | Unidade |
+|------|-----------|---------|
+| Total ONUs Provisionadas | Total de ONUs na OLT | count |
+| Total ONUs Online | ONUs com status "up" | count |
+| Total ONUs Offline | ONUs com status "dn" | count |
+| Clientes Total OLT | Contador SNMP geral | count |
+| Temperatura da OLT | Temperatura do chassi | °C |
+| Uptime da OLT | Tempo de atividade | uptime |
+
+### Itens por PON (via LLD)
+
+| Item | Descrição | Unidade |
+|------|-----------|---------|
+| ONU Online - PON {#PONNAME} | ONUs online na PON | count |
+| ONU Offline - PON {#PONNAME} | ONUs offline na PON | count |
+| ONU Provisionadas - PON {#PONNAME} | Total de ONUs na PON | count |
+| Melhor Sinal - PON {#PONNAME} | Melhor sinal RX | dBm |
+| Pior Sinal - PON {#PONNAME} | Pior sinal RX | dBm |
+| Média Sinal - PON {#PONNAME} | Mediana do sinal RX | dBm |
+
+### Triggers
+
+| Trigger | Condição | Severidade |
+|---------|----------|------------|
+| Sinal Crítico na PON | Pior sinal > 30 dBm | HIGH |
+
+### Gráficos
+
+- **Status ONUs por PON:** Barras empilhadas (Online/Offline)
+- **Sinais Ópticos por PON:** Linha temporal (Best/Median/Poor)
+
+---
+
+## 🔄 Migração da Versão Antiga
+
+Se você usava a versão com `zabbix_sender` + cron:
+
+### Passo 1: Fazer backup
+
+```bash
+sudo ./deploy.sh --backup
 ```
 
-## Migração da Versão Legada
+### Passo 2: Remover cron antigo
 
-Se você estava usando a versão anterior (com zabbix_sender + cron):
-
-```sh
-# 1. Fazer backup dos scripts legados
-sudo ./deploy.sh --backup
-
-# 2. Remover entradas de cron
+```bash
 sudo rm -f /etc/cron.d/TemplateOLT
+```
 
-# 3. Importar novo template YAML no Zabbix
+### Passo 3: Importar novo template
 
-# 4. Após 7 dias de operação estável, remover scripts legados
+- Importe `Template Fiberhome.yaml` no Zabbix
+- O novo template substitui o antigo automaticamente
+
+### Passo 4: Validar dados
+
+- Aguarde 10 minutos
+- Verifique **Monitoring → Latest Data**
+- Compare com dados anteriores
+
+### Passo 5: Limpeza (após 7 dias estável)
+
+```bash
 rm -f /usr/lib/zabbix/externalscripts/GetONUOnline.py
 rm -f /usr/lib/zabbix/externalscripts/GetONUSignal.py
 ```
 
-## Estrutura de Arquivos
+---
+
+## 🔧 Troubleshooting
+
+### Erro: "Python 3.10+ is required"
+
+```bash
+# Verificar versão
+python3 --version
+
+# Se necessário, instalar Python 3.10+
+# Debian/Ubuntu
+apt install python3.11
+
+# RHEL/CentOS
+yum install python39
+```
+
+### Erro: "Connection refused" (Telnet)
+
+```bash
+# Testar conectividade
+telnet 186.209.111.0 23
+
+# Verificar firewall
+iptables -L -n | grep 23
+```
+
+### Erro: "Timeout waiting for pattern"
+
+Causa provável: credenciais incorretas ou login lento.
+
+```bash
+# Testar login manual
+telnet 186.209.111.0 23
+# Digite: GEPON <enter>
+# Digite: GEPON <enter>
+# Deve aparecer: User>
+```
+
+### Scripts não aparecem no Zabbix
+
+```bash
+# Verificar permissões
+ls -la /usr/lib/zabbix/externalscripts/fiberhome/
+chown -R zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome/
+chmod +x /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_*.py
+```
+
+### Verificar logs
+
+```bash
+# Logs do Zabbix Server
+tail -f /var/log/zabbix/zabbix_server.log | grep -i fiberhome
+
+# Logs do sistema
+journalctl -u zabbix-server -f
+```
+
+### Debug de script
+
+```bash
+# Rodar com verbose
+python3 -c "
+import logging
+logging.basicConfig(level=logging.DEBUG)
+import sys
+sys.path.insert(0, '/usr/lib/zabbix/externalscripts/fiberhome')
+from scrapli_client import FiberhomeClient
+import asyncio
+asyncio.run(FiberhomeClient('186.209.111.0', 'GEPON', 'GEPON', 23).connect())
+"
+```
+
+---
+
+## 📁 Estrutura de Arquivos
 
 ```
 /usr/lib/zabbix/externalscripts/
-├── GetPONName.py                    # LLD SNMP
+├── GetPONName.py                    # LLD via SNMP
 └── fiberhome/
-    ├── __init__.py
-    ├── constants.py                 # Timeouts, patterns
+    ├── __init__.py                  # Módulo Python
+    ├── constants.py                 # Constantes e patterns
     ├── scrapli_client.py            # Cliente async Telnet
     ├── parsers.py                   # Parsing de output CLI
-    ├── fiberhome_olt_status.py      # Master: Online/Offline/Provisioned
-    └── fiberhome_olt_signals.py     # Master: Sinais ópticos
+    ├── fiberhome_olt_status.py      # Master Item: Status
+    └── fiberhome_olt_signals.py     # Master Item: Sinais
 ```
 
-## Comandos CLI Confirmados (Fiberhome AN5116-06B / AN5516-01)
+---
 
-### Login (dois níveis)
+## 📝 Comandos CLI da OLT (Referência)
+
+### Login em dois níveis
 ```
-[Banner ASCII]
 Login: GEPON
 Password: ****
 User> EN
@@ -213,50 +492,39 @@ Admin#
 Admin# cd service
 Admin\service# terminal length 0
 Admin\service# cd ..
-Admin#
 ```
 
-### Listar ONUs online/offline
+### Listar ONUs
 ```
 Admin# cd onu
 Admin\onu# show authorization slot all pon all
 ```
 
-### Sinal óptico por PON
+### Sinal óptico
 ```
 Admin# cd card
 Admin\card# show optic_module_para slot 1 pon 1
 ```
 
-### Encerramento de sessão
-```
-Admin# quit
-User> quit
-```
+---
 
-## Troubleshooting
+## 📜 Licença
 
-### Erro de conexão
-```sh
-# Verificar conectividade
-telnet 186.209.111.0 23
+MIT License
 
-# Verificar credenciais
-python3 -c "
-import asyncio
-from fiberhome.scrapli_client import FiberhomeClient
-asyncio.run(FiberhomeClient('IP', 'USER', 'PASS', 23).connect())
-"
-```
+---
 
-### Logs
-Os scripts logam para stderr (stdout é reservado para JSON):
+## 🤝 Contribuições
 
-```sh
-# Ver logs em tempo real
-journalctl -u zabbix-server -f | grep -i fiberhome
-```
+1. Fork o projeto
+2. Crie sua branch (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'feat: nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
 
-## Licença
+---
 
-MIT License - Veja arquivo LICENSE para detalhes.
+## 📞 Suporte
+
+- **Issues:** [GitHub Issues](https://github.com/flicl/MonitoraFiberhome/issues)
+- **Autor:** [@flicl](https://github.com/flicl)
