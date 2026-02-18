@@ -209,7 +209,7 @@ zabbix_export:
                     - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var arr = JSON.parse(value); var pon = "{#PONNAME}"; var found = arr.find(function(v) { return v.pon_name === pon; }); return found ? found.offline : 0;'
+                    - 'var pon = "{#PONNAME}"; var found = value.find(function(v) { return v.pon_name === pon; }); return found ? found.offline : 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -229,7 +229,7 @@ zabbix_export:
                     - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var arr = JSON.parse(value); var pon = "{#PONNAME}"; var found = arr.find(function(v) { return v.pon_name === pon; }); return found ? found.online : 0;'
+                    - 'var pon = "{#PONNAME}"; var found = value.find(function(v) { return v.pon_name === pon; }); return found ? found.online : 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -249,7 +249,7 @@ zabbix_export:
                     - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var arr = JSON.parse(value); var pon = "{#PONNAME}"; var found = arr.find(function(v) { return v.pon_name === pon; }); return found ? found.provisioned : 0;'
+                    - 'var pon = "{#PONNAME}"; var found = value.find(function(v) { return v.pon_name === pon; }); return found ? found.provisioned : 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -274,7 +274,7 @@ zabbix_export:
                     - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var arr = JSON.parse(value); var pon = "{#PONNAME}"; var found = arr.find(function(v) { return v.pon_name === pon; }); return found ? found.best_signal : 0;'
+                    - 'var pon = "{#PONNAME}"; var found = value.find(function(v) { return v.pon_name === pon; }); return found ? found.best_signal : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -296,7 +296,7 @@ zabbix_export:
                     - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var arr = JSON.parse(value); var pon = "{#PONNAME}"; var found = arr.find(function(v) { return v.pon_name === pon; }); return found ? found.median_signal : 0;'
+                    - 'var pon = "{#PONNAME}"; var found = value.find(function(v) { return v.pon_name === pon; }); return found ? found.median_signal : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -318,7 +318,7 @@ zabbix_export:
                     - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var arr = JSON.parse(value); var pon = "{#PONNAME}"; var found = arr.find(function(v) { return v.pon_name === pon; }); return found ? found.poor_signal : 0;'
+                    - 'var pon = "{#PONNAME}"; var found = value.find(function(v) { return v.pon_name === pon; }); return found ? found.poor_signal : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
