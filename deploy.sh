@@ -101,26 +101,24 @@ deploy_scripts() {
     cp "${SOURCE_DIR}/fiberhome/"*.py "${FIBERHOME_DIR}/"
 
     # Copy wrapper scripts to main externalscripts directory
-    cp "${SOURCE_DIR}/GetPONStatus.py" "${SCRIPTS_DIR}/"
-    cp "${SOURCE_DIR}/GetPONSignals.py" "${SCRIPTS_DIR}/"
-
-    # Copy GetPONName.py to main scripts directory
-    cp "${SOURCE_DIR}/GetPONName.py" "${SCRIPTS_DIR}/"
+    cp "${SOURCE_DIR}/fiberhome_olt_status.py" "${SCRIPTS_DIR}/"
+    cp "${SOURCE_DIR}/fiberhome_olt_signals.py" "${SCRIPTS_DIR}/"
+    cp "${SOURCE_DIR}/fiberhome_olt_lld.py" "${SCRIPTS_DIR}/"
 
     # Set permissions
-    chmod +x "${SCRIPTS_DIR}/GetPONStatus.py"
-    chmod +x "${SCRIPTS_DIR}/GetPONSignals.py"
-    chmod +x "${SCRIPTS_DIR}/GetPONName.py"
+    chmod +x "${SCRIPTS_DIR}/fiberhome_olt_status.py"
+    chmod +x "${SCRIPTS_DIR}/fiberhome_olt_signals.py"
+    chmod +x "${SCRIPTS_DIR}/fiberhome_olt_lld.py"
 
     chown -R zabbix:zabbix "${FIBERHOME_DIR}"
-    chown zabbix:zabbix "${SCRIPTS_DIR}/GetPONStatus.py"
-    chown zabbix:zabbix "${SCRIPTS_DIR}/GetPONSignals.py"
-    chown zabbix:zabbix "${SCRIPTS_DIR}/GetPONName.py"
+    chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_status.py"
+    chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_signals.py"
+    chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_lld.py"
 
     log_info "Scripts deployed successfully"
-    log_info "  - ${SCRIPTS_DIR}/GetPONStatus.py"
-    log_info "  - ${SCRIPTS_DIR}/GetPONSignals.py"
-    log_info "  - ${SCRIPTS_DIR}/GetPONName.py"
+    log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_status.py"
+    log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_signals.py"
+    log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_lld.py"
     log_info "  - ${FIBERHOME_DIR}/ (module files)"
 }
 
@@ -133,9 +131,9 @@ test_scripts() {
     python3 -m py_compile "${FIBERHOME_DIR}/fiberhome_olt_status.py"
     python3 -m py_compile "${FIBERHOME_DIR}/fiberhome_olt_signals.py"
     # Wrapper scripts
-    python3 -m py_compile "${SCRIPTS_DIR}/GetPONStatus.py"
-    python3 -m py_compile "${SCRIPTS_DIR}/GetPONSignals.py"
-    python3 -m py_compile "${SCRIPTS_DIR}/GetPONName.py"
+    python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_status.py"
+    python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_signals.py"
+    python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_lld.py"
     log_info "Syntax check passed"
 }
 
