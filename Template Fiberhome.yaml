@@ -209,7 +209,7 @@ zabbix_export:
                     - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var pon = "{#PONNAME}"; var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name === pon) { return Number(arr[i].offline); } } return 0;'
+                    - 'var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } var targetPon = "{#PONNAME}"; for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name == targetPon) { return Number(arr[i].offline); } } return 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -229,7 +229,7 @@ zabbix_export:
                     - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var pon = "{#PONNAME}"; var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name === pon) { return Number(arr[i].online); } } return 0;'
+                    - 'var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } var targetPon = "{#PONNAME}"; for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name == targetPon) { return Number(arr[i].online); } } return 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -249,7 +249,7 @@ zabbix_export:
                     - '$.data.pon_ports'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var pon = "{#PONNAME}"; var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name === pon) { return Number(arr[i].provisioned); } } return 0;'
+                    - 'var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } var targetPon = "{#PONNAME}"; for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name == targetPon) { return Number(arr[i].provisioned); } } return 0;'
               tags:
                 - tag: Application
                   value: 'PON Status'
@@ -274,7 +274,7 @@ zabbix_export:
                     - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var pon = "{#PONNAME}"; var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name === pon) { return Number(arr[i].best_signal); } } return 0;'
+                    - 'var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } var targetPon = "{#PONNAME}"; for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name == targetPon) { return Number(arr[i].best_signal); } } return 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -296,7 +296,7 @@ zabbix_export:
                     - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var pon = "{#PONNAME}"; var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name === pon) { return Number(arr[i].median_signal); } } return 0;'
+                    - 'var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } var targetPon = "{#PONNAME}"; for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name == targetPon) { return Number(arr[i].median_signal); } } return 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -318,7 +318,7 @@ zabbix_export:
                     - '$.data.pon_signals'
                 - type: JAVASCRIPT
                   parameters:
-                    - 'var pon = "{#PONNAME}"; var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name === pon) { return Number(arr[i].poor_signal); } } return 0;'
+                    - 'var arr = value; if (typeof arr === "string") { arr = JSON.parse(arr); } if (!Array.isArray(arr)) { return 0; } var targetPon = "{#PONNAME}"; for (var i = 0; i < arr.length; i++) { if (arr[i].pon_name == targetPon) { return Number(arr[i].poor_signal); } } return 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
