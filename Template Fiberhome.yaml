@@ -9,21 +9,29 @@ zabbix_export:
       name: 'Template OLT Fiberhome RP1000'
       description: |
         Template para monitoramento de OLTs Fiberhome RP1000+ (AN5116-06B / AN5516-01)
-        
-        Requer scripts externos:
+
+        Requer scripts externos em /usr/lib/zabbix/externalscripts/fiberhome/:
         - GetPONName.py (LLD SNMP)
-        - GetONUOnline.py (Telnet)
-        - GetONUSignal.py (Telnet)
-        
+        - fiberhome_olt_status.py (Master Item - Status)
+        - fiberhome_olt_signals.py (Master Item - Sinais)
+
         Macros obrigatórias:
         {$OLT_USER} - Usuário Telnet
         {$OLT_PASSWORD} - Senha Telnet
         {$OLT_PORT} - Porta Telnet (padrão 23)
         {$SNMP_COMMUNITY} - Comunidade SNMP
         {$SNMP_PORT} - Porta SNMP (padrão 161)
+
+        Arquitetura:
+        - Master Items (EXTERNAL) → retornam JSON
+        - Dependent Items → extraem valores via JSONPath
+        - Zero zabbix_sender, zero cron
       groups:
         - name: 'Templates/Network Devices'
       items:
+        # ====================
+        # SNMP Items (inalterados)
+        # ====================
         - uuid: 482093714ed940d1b2f0760dc7643d0b
           name: 'Fan Status'
           type: SNMP_AGENT
@@ -86,36 +94,88 @@ zabbix_export:
           tags:
             - tag: Application
               value: Chassi
+
+        # ====================
+        # MASTER ITEMS (EXTERNAL - JSON)
+        # ====================
+        - uuid: a1b2c3d4e5f6478590a1b2c3d4e5f678
+          name: 'OLT Status - Master Item'
+          type: EXTERNAL
+          key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+          delay: 6m
+          history: 7d
+          trends: 0
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: 'Fiberhome Overview'
+
+        - uuid: b2c3d4e5f6785901a2b3c4d5e6f78901
+          name: 'OLT Signals - Master Item'
+          type: EXTERNAL
+          key: 'fiberhome/fiberhome_olt_signals.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+          delay: 2h
+          history: 7d
+          trends: 0
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: 'Fiberhome Overview'
+
+        # ====================
+        # DEPENDENT ITEMS - Globais
+        # ====================
         - uuid: c5325854817d4760b298418302194372
           name: 'Total ONUs Offline (Global)'
-          type: TRAP
+          type: DEPENDENT
           key: TotalOntOffline
           delay: '0'
           history: 7d
           trends: 90d
+          master_item:
+            key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.data.totals.offline'
           tags:
             - tag: Application
               value: 'Fiberhome Overview'
+
         - uuid: 8784725350414777b7320092c2539074
           name: 'Total ONUs Online (Global)'
-          type: TRAP
+          type: DEPENDENT
           key: TotalOntOnline
           delay: '0'
           history: 7d
           trends: 90d
+          master_item:
+            key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.data.totals.online'
           tags:
             - tag: Application
               value: 'Fiberhome Overview'
+
         - uuid: 4024328594244908ba67142445831557
           name: 'Total ONUs Provisionadas (Global)'
-          type: TRAP
+          type: DEPENDENT
           key: TotalOntProvisioned
           delay: '0'
           history: 7d
           trends: 90d
+          master_item:
+            key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.data.totals.provisioned'
           tags:
             - tag: Application
               value: 'Fiberhome Overview'
+
       discovery_rules:
         - uuid: 2257007727144e59bf46162507663242
           name: 'PON Discovery'
@@ -131,59 +191,134 @@ zabbix_export:
           lifetime: 30d
           enabled_lifetime_type: DISABLE_NEVER
           item_prototypes:
+            # ====================
+            # DEPENDENT PROTOTYPES - Status (from Master Status)
+            # ====================
+            - uuid: 4d038374246440268584825946394239
+              name: 'ONUs Offline - PON {#PONNAME}'
+              type: DEPENDENT
+              key: 'OntOffline.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              master_item:
+                key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.pon_ports[?(@.pon_name == ''{#PONNAME}'')].offline'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+              tags:
+                - tag: Application
+                  value: 'PON Status'
+
+            - uuid: 3d038374246440268584825946394240
+              name: 'ONUs Online - PON {#PONNAME}'
+              type: DEPENDENT
+              key: 'OntOnline.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              master_item:
+                key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.pon_ports[?(@.pon_name == ''{#PONNAME}'')].online'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+              tags:
+                - tag: Application
+                  value: 'PON Status'
+
+            - uuid: 2d038374246440268584825946394241
+              name: 'ONUs Provisionadas - PON {#PONNAME}'
+              type: DEPENDENT
+              key: 'OntProvisioned.[{#PONNAME}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              master_item:
+                key: 'fiberhome/fiberhome_olt_status.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.pon_ports[?(@.pon_name == ''{#PONNAME}'')].provisioned'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
+              tags:
+                - tag: Application
+                  value: 'PON Status'
+
+            # ====================
+            # DEPENDENT PROTOTYPES - Signals (from Master Signals)
+            # ====================
             - uuid: 8c038374246440268584825946394235
               name: 'Melhor Sinal dBm - PON {#PONNAME}'
-              type: TRAP
+              type: DEPENDENT
               key: 'OntBestSinal.[{#PONNAME}]'
               delay: '0'
               history: 7d
               value_type: FLOAT
               trends: 90d
               units: dBm
+              master_item:
+                key: 'fiberhome/fiberhome_olt_signals.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.pon_signals[?(@.pon_name == ''{#PONNAME}'')].best_signal'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
+
             - uuid: 7c038374246440268584825946394236
               name: 'Média Sinal dBm - PON {#PONNAME}'
-              type: TRAP
+              type: DEPENDENT
               key: 'OntMediaSinal.[{#PONNAME}]'
               delay: '0'
               history: 7d
               value_type: FLOAT
               trends: 90d
               units: dBm
+              master_item:
+                key: 'fiberhome/fiberhome_olt_signals.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.pon_signals[?(@.pon_name == ''{#PONNAME}'')].median_signal'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
-            - uuid: 4d038374246440268584825946394239
-              name: 'ONUs Offline - PON {#PONNAME}'
-              type: TRAP
-              key: 'OntOffline.[{#PONNAME}]'
-              delay: '0'
-              history: 7d
-              trends: 90d
-              tags:
-                - tag: Application
-                  value: 'PON Status'
-            - uuid: 3d038374246440268584825946394240
-              name: 'ONUs Online - PON {#PONNAME}'
-              type: TRAP
-              key: 'OntOnline.[{#PONNAME}]'
-              delay: '0'
-              history: 7d
-              trends: 90d
-              tags:
-                - tag: Application
-                  value: 'PON Status'
+
             - uuid: 6c038374246440268584825946394237
               name: 'Pior Sinal dBm - PON {#PONNAME}'
-              type: TRAP
+              type: DEPENDENT
               key: 'OntPoorSinal.[{#PONNAME}]'
               delay: '0'
               history: 7d
               value_type: FLOAT
               trends: 90d
               units: dBm
+              master_item:
+                key: 'fiberhome/fiberhome_olt_signals.py[{HOST.CONN},{$OLT_USER},{$OLT_PASSWORD},{$OLT_PORT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.data.pon_signals[?(@.pon_name == ''{#PONNAME}'')].poor_signal'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return Array.isArray(value) && value.length > 0 ? value[0] : 0;'
               tags:
                 - tag: Application
                   value: 'PON Signals'
@@ -193,16 +328,7 @@ zabbix_export:
                   name: 'Sinal Crítico (> -30dBm) na PON {#PONNAME}'
                   priority: HIGH
                   description: 'Pior sinal da PON está acima de 30dBm (perda alta).'
-            - uuid: 2d038374246440268584825946394241
-              name: 'ONUs Provisionadas - PON {#PONNAME}'
-              type: TRAP
-              key: 'OntProvisioned.[{#PONNAME}]'
-              delay: '0'
-              history: 7d
-              trends: 90d
-              tags:
-                - tag: Application
-                  value: 'PON Status'
+
           graph_prototypes:
             - uuid: 1a038374246440268584825946394242
               name: 'Sinais Ópticos - PON {#PONNAME}'
