@@ -5,8 +5,8 @@ zabbix_export:
       name: 'Templates/Network Devices'
   templates:
     - uuid: a308b3e8c9b24466b041695503434691
-      template: Template_OLT_Fiberhome_RP1000
-      name: 'Template OLT Fiberhome RP1000'
+      template: 'TriplePlay - OLT FiberHome'
+      name: 'TriplePlay - OLT FiberHome'
       description: |
         Template para monitoramento de OLTs Fiberhome RP1000+ (AN5116-06B / AN5516-01)
         
@@ -167,153 +167,6 @@ zabbix_export:
             - tag: Application
               value: 'Fiberhome Overview'
       discovery_rules:
-        - uuid: 0f5aa4c3e514423bb269966bf39802fb
-          name: 'Network Interfaces Discovery'
-          type: EXTERNAL
-          key: 'fiberhome_olt_interfaces.py[{HOST.CONN},{$SNMP_COMMUNITY},{$SNMP_PORT}]'
-          delay: 1d
-          filter:
-            evaltype: AND
-            conditions:
-              - macro: '{#IFTYPE}'
-                value: 6|62|117
-                formulaid: A
-          lifetime: 30d
-          enabled_lifetime_type: DISABLE_NEVER
-          description: 'Discovering physical ethernet interfaces from IF-MIB. Only ethernet (6, 62, 117) interfaces are monitored.'
-          item_prototypes:
-            - uuid: a1b2c3d4e5f6478590a1b2c3d4e5f679
-              name: 'Interface {#IFNAME}: Bits received'
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
-              key: 'net.if.in[ifHCInOctets.{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: 90d
-              units: bps
-              description: |
-                MIB: IF-MIB
-                The total number of octets received on the interface, including framing characters.
-                This object is a 64-bit version of ifInOctets.
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-                - type: MULTIPLIER
-                  parameters:
-                    - '8'
-              tags:
-                - tag: Application
-                  value: 'Network Interfaces'
-            - uuid: b2c3d4e5f6784901a2b3c4d5e6f78902
-              name: 'Interface {#IFNAME}: Bits sent'
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
-              key: 'net.if.out[ifHCOutOctets.{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: 90d
-              units: bps
-              description: |
-                MIB: IF-MIB
-                The total number of octets transmitted out of the interface, including framing characters.
-                This object is a 64-bit version of ifOutOctets.
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-                - type: MULTIPLIER
-                  parameters:
-                    - '8'
-              tags:
-                - tag: Application
-                  value: 'Network Interfaces'
-            - uuid: 505a4759b89146198bf3faae8590349c
-              name: 'Interface {#IFNAME}: Speed'
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}'
-              key: 'net.if.speed[ifHighSpeed.{#SNMPINDEX}]'
-              delay: 5m
-              history: 7d
-              trends: '0'
-              units: bps
-              description: |
-                MIB: IF-MIB
-                An estimate of the interface's current bandwidth in units of 1,000,000 bits per second.
-              preprocessing:
-                - type: MULTIPLIER
-                  parameters:
-                    - '1000000'
-                - type: DISCARD_UNCHANGED_HEARTBEAT
-                  parameters:
-                    - 1h
-              tags:
-                - tag: Application
-                  value: 'Network Interfaces'
-            - uuid: cf50af1058074736836c94179b6162d5
-              name: 'Interface {#IFNAME}: Operational status'
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}'
-              key: 'net.if.status[ifOperStatus.{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              description: |
-                MIB: IF-MIB
-                The current operational state of the interface.
-                1 = up, 2 = down, 3 = testing, 4 = unknown, 5 = dormant, 6 = notPresent, 7 = lowerLayerDown
-              valuemap:
-                name: 'IF-MIB::ifOperStatus'
-              tags:
-                - tag: Application
-                  value: 'Network Interfaces'
-              trigger_prototypes:
-                - uuid: 1b752338ebab4cf0a986d6608ecec699
-                  expression: 'last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}])=2 and (last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}],#1)<>last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}],#2))'
-                  recovery_mode: RECOVERY_EXPRESSION
-                  recovery_expression: 'last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}])<>2'
-                  name: 'Interface {#IFNAME}: Link down'
-                  opdata: 'Current state: {ITEM.LASTVALUE1}'
-                  priority: AVERAGE
-                  description: 'Interface went down from up state.'
-                  tags:
-                    - tag: scope
-                      value: availability
-            - uuid: ed1f6c141aed446cb1a6a870ea25a08f
-              name: 'Interface {#IFNAME}: Interface type'
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.2.1.2.2.1.3.{#SNMPINDEX}'
-              key: 'net.if.type[ifType.{#SNMPINDEX}]'
-              delay: 1h
-              history: 7d
-              trends: '0'
-              description: |
-                MIB: IF-MIB
-                The type of interface. 6=ethernetCsmacd, 62=fastEther, 117=gigabitEthernet
-              valuemap:
-                name: 'IF-MIB::ifType'
-              preprocessing:
-                - type: DISCARD_UNCHANGED_HEARTBEAT
-                  parameters:
-                    - 1d
-              tags:
-                - tag: Application
-                  value: 'Network Interfaces'
-          graph_prototypes:
-            - uuid: 0950ea30b0304062a6c5b3227f86e64f
-              name: 'Interface {#IFNAME}: Network traffic'
-              graph_items:
-                - drawtype: GRADIENT_LINE
-                  color: 199C0D
-                  item:
-                    host: Template_OLT_Fiberhome_RP1000
-                    key: 'net.if.in[ifHCInOctets.{#SNMPINDEX}]'
-                - sortorder: '1'
-                  drawtype: BOLD_LINE
-                  color: F63100
-                  item:
-                    host: Template_OLT_Fiberhome_RP1000
-                    key: 'net.if.out[ifHCOutOctets.{#SNMPINDEX}]'
         - uuid: 2257007727144e59bf46162507663242
           name: 'PON Discovery'
           type: EXTERNAL
@@ -431,7 +284,7 @@ zabbix_export:
                   value: 'PON Signals'
               trigger_prototypes:
                 - uuid: 5c038374246440268584825946394238
-                  expression: 'last(/Template_OLT_Fiberhome_RP1000/OntPoorSinal.[{#PONNAME}])>30'
+                  expression: 'last(/TriplePlay - OLT FiberHome/OntPoorSinal.[{#PONNAME}])>30'
                   name: 'Sinal Crítico (> -30dBm) na PON {#PONNAME}'
                   priority: HIGH
                   description: 'Pior sinal da PON está acima de 30dBm (perda alta).'
@@ -460,17 +313,17 @@ zabbix_export:
               graph_items:
                 - color: 00FF00
                   item:
-                    host: Template_OLT_Fiberhome_RP1000
+                    host: 'TriplePlay - OLT FiberHome'
                     key: 'OntBestSinal.[{#PONNAME}]'
                 - sortorder: '1'
                   color: 0000FF
                   item:
-                    host: Template_OLT_Fiberhome_RP1000
+                    host: 'TriplePlay - OLT FiberHome'
                     key: 'OntMediaSinal.[{#PONNAME}]'
                 - sortorder: '2'
                   color: FF0000
                   item:
-                    host: Template_OLT_Fiberhome_RP1000
+                    host: 'TriplePlay - OLT FiberHome'
                     key: 'OntPoorSinal.[{#PONNAME}]'
             - uuid: 0b038374246440268584825946394243
               name: 'Status ONUs - PON {#PONNAME}'
@@ -478,13 +331,13 @@ zabbix_export:
                 - drawtype: FILLED_REGION
                   color: 00AA00
                   item:
-                    host: Template_OLT_Fiberhome_RP1000
+                    host: 'TriplePlay - OLT FiberHome'
                     key: 'OntOnline.[{#PONNAME}]'
                 - sortorder: '1'
                   drawtype: BOLD_LINE
                   color: FF0000
                   item:
-                    host: Template_OLT_Fiberhome_RP1000
+                    host: 'TriplePlay - OLT FiberHome'
                     key: 'OntOffline.[{#PONNAME}]'
       macros:
         - macro: '{$OLT_PASSWORD}'

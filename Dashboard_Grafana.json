@@ -18,14 +18,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 8,
+  "id": 5,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
       },
       "gridPos": {
         "h": 3,
@@ -40,70 +39,18 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div class=\"container\">\r\n        <div class=\"text\">MONITORAMENTO</div>\r\n        <div class=\"logoTp\">\r\n            <img src=\"https://i.imgur.com/lt7ZeST.png\"\r\n     alt=\"TriplePLay\"\r\n     width=\"300\">\r\n\r\n        </div>\r\n    </div>\r\n<style>\r\n    .text{\r\n    font-family: Arial, Helvetica, sans-serif;\r\nfont-size: 27px;\r\nletter-spacing: 2px;\r\nword-spacing: 2px;\r\ncolor: #fff;\r\nfont-weight: 700;\r\ntext-decoration: none;\r\nfont-style: italic;\r\nfont-variant: small-caps;\r\ntext-transform: none;\r\n    }\r\n\r\n    .container{\r\n   \r\n    height:6em;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    \r\n    align-items: center;\r\n    justify-content: space-evenly;\r\n\r\n   \r\n    \r\nbackground: rgba(255, 255, 255, 0.35);\r\nborder-radius: 16px;\r\nbox-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\r\nbackdrop-filter: blur(7.1px);\r\n-webkit-backdrop-filter: blur(7.1px);\r\nborder: 1px solid rgba(255, 255, 255, 0.4);\r\n\r\n    \r\n\r\n}\r\n",
+        "content": "<div class=\"container\">\r\n        <div class=\"text\">MONITORAMENTO OLT BELA VISTA</div>\r\n        <div class=\"logoTp\">\r\n            <img src=\"https://i.imgur.com/lt7ZeST.png\"\r\n     alt=\"TriplePLay\"\r\n     width=\"300\">\r\n\r\n        </div>\r\n    </div>\r\n<style>\r\n    .text{\r\n    font-family: Arial, Helvetica, sans-serif;\r\nfont-size: 27px;\r\nletter-spacing: 2px;\r\nword-spacing: 2px;\r\ncolor: #fff;\r\nfont-weight: 700;\r\ntext-decoration: none;\r\nfont-style: italic;\r\nfont-variant: small-caps;\r\ntext-transform: none;\r\n    }\r\n\r\n    .container{\r\n   \r\n    height:6em;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    \r\n    align-items: center;\r\n    justify-content: space-evenly;\r\n\r\n   \r\n    \r\nbackground: rgba(255, 255, 255, 0.35);\r\nborder-radius: 16px;\r\nbox-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\r\nbackdrop-filter: blur(7.1px);\r\n-webkit-backdrop-filter: blur(7.1px);\r\nborder: 1px solid rgba(255, 255, 255, 0.4);\r\n\r\n    \r\n\r\n}\r\n",
         "mode": "html"
       },
-      "pluginVersion": "10.0.1",
-      "targets": [
-        {
-          "application": {
-            "filter": ""
-          },
-          "countTriggersBy": "",
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
-          },
-          "functions": [],
-          "group": {
-            "filter": ""
-          },
-          "host": {
-            "filter": ""
-          },
-          "item": {
-            "filter": ""
-          },
-          "itemTag": {
-            "filter": ""
-          },
-          "macro": {
-            "filter": ""
-          },
-          "options": {
-            "count": false,
-            "disableDataAlignment": false,
-            "showDisabledItems": false,
-            "skipEmptyValues": false,
-            "useTrends": "default",
-            "useZabbixValueMapping": false
-          },
-          "proxy": {
-            "filter": ""
-          },
-          "queryType": "0",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "schema": 12,
-          "table": {
-            "skipEmptyValues": false
-          },
-          "tags": {
-            "filter": ""
-          },
-          "textFilter": "",
-          "trigger": {
-            "filter": ""
-          }
-        }
-      ],
+      "pluginVersion": "12.3.3",
+      "title": "",
       "transparent": true,
       "type": "text"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -116,7 +63,7 @@
             "steps": [
               {
                 "color": "#6bbc60",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -125,8 +72,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 6,
+        "h": 4,
+        "w": 8,
         "x": 0,
         "y": 3
       },
@@ -136,6 +83,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -143,13 +91,15 @@
           "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 50,
           "valueSize": 50
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -158,8 +108,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -181,16 +132,16 @@
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "CPN-BNG-JUNIPER-MX80"
           },
           "item": {
-            "filter": "Download - Agregado"
+            "filter": "Interface [xe-0/0/1][OLT-FIBERHOME-BELA-VISTA]: Bits sent"
           },
           "itemTag": {
-            "filter": ""
+            "filter": "alias: OLT-FIBERHOME-BELA-VISTA"
           },
           "macro": {
             "filter": ""
@@ -222,12 +173,13 @@
           }
         }
       ],
+      "title": "",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -235,26 +187,30 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 57,
-            "gradientMode": "hue",
+            "fillOpacity": 33,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "smooth",
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 3,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
+            "showValues": false,
             "spanNulls": true,
             "stacking": {
               "group": "A",
@@ -265,26 +221,16 @@
             }
           },
           "mappings": [],
-          "max": 9000000000,
-          "min": 10000,
           "thresholds": {
-            "mode": "percentage",
+            "mode": "absolute",
             "steps": [
               {
-                "color": "#1df600",
-                "value": null
+                "color": "green",
+                "value": 0
               },
               {
-                "color": "yellow",
-                "value": 40
-              },
-              {
-                "color": "dark-orange",
-                "value": 70
-              },
-              {
-                "color": "#db0909",
-                "value": 90
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -294,7 +240,22 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Consumo Agregado - Ontem"
+              "options": "Download"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#2ce414",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Download - Ontem"
             },
             "properties": [
               {
@@ -309,22 +270,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Consumo Agregado - Hoje"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#1dc706",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Upload Agregado - Hoje"
+              "options": "Upload"
             },
             "properties": [
               {
@@ -339,9 +285,9 @@
         ]
       },
       "gridPos": {
-        "h": 13,
-        "w": 18,
-        "x": 6,
+        "h": 8,
+        "w": 16,
+        "x": 8,
         "y": 3
       },
       "id": 3,
@@ -355,11 +301,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -368,78 +315,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
-          "functions": [
-            {
-              "added": true,
-              "def": {
-                "category": "Alias",
-                "defaultParams": [],
-                "name": "setAlias",
-                "params": [
-                  {
-                    "name": "alias",
-                    "type": "string"
-                  }
-                ]
-              },
-              "params": [
-                "Consumo Agregado - Hoje"
-              ],
-              "text": "setAlias()"
-            }
-          ],
-          "group": {
-            "filter": "OLT"
-          },
-          "host": {
-            "filter": "OLT-HUAWEI_GOI"
-          },
-          "item": {
-            "filter": "Download - Agregado"
-          },
-          "itemTag": {
-            "filter": ""
-          },
-          "macro": {
-            "filter": ""
-          },
-          "options": {
-            "count": false,
-            "disableDataAlignment": false,
-            "showDisabledItems": false,
-            "skipEmptyValues": false,
-            "useTrends": "default",
-            "useZabbixValueMapping": false
-          },
-          "proxy": {
-            "filter": ""
-          },
-          "queryType": "0",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "schema": 12,
-          "table": {
-            "skipEmptyValues": false
-          },
-          "tags": {
-            "filter": ""
-          },
-          "textFilter": "",
-          "trigger": {
-            "filter": ""
-          }
-        },
-        {
-          "application": {
-            "filter": ""
-          },
-          "countTriggersBy": "",
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
-          },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -482,30 +360,101 @@
                 ]
               },
               "params": [
-                "Consumo Agregado - Ontem"
+                "Download - Ontem"
               ],
               "text": "setAlias()"
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
-          "hide": false,
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "CPN-BNG-JUNIPER-MX80"
           },
           "item": {
-            "filter": "Download - Agregado"
+            "filter": "Interface [xe-0/0/1][OLT-FIBERHOME-BELA-VISTA]: Bits sent"
           },
           "itemTag": {
-            "filter": ""
+            "filter": "alias: OLT-FIBERHOME-BELA-VISTA"
           },
           "macro": {
             "filter": ""
           },
           "options": {
             "count": false,
-            "disableDataAlignment": false,
+            "disableDataAlignment": true,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        },
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "afdiqaggew54wd"
+          },
+          "evaltype": "0",
+          "functions": [
+            {
+              "added": true,
+              "def": {
+                "category": "Alias",
+                "defaultParams": [],
+                "name": "setAlias",
+                "params": [
+                  {
+                    "name": "alias",
+                    "type": "string"
+                  }
+                ]
+              },
+              "params": [
+                "Download"
+              ],
+              "text": "setAlias()"
+            }
+          ],
+          "group": {
+            "filter": "COOPERNET"
+          },
+          "hide": false,
+          "host": {
+            "filter": "CPN-BNG-JUNIPER-MX80"
+          },
+          "item": {
+            "filter": "Interface [xe-0/0/1][OLT-FIBERHOME-BELA-VISTA]: Bits sent"
+          },
+          "itemTag": {
+            "filter": "alias: OLT-FIBERHOME-BELA-VISTA"
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": true,
             "showDisabledItems": false,
             "skipEmptyValues": false,
             "useTrends": "default",
@@ -536,8 +485,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -553,30 +503,30 @@
                 ]
               },
               "params": [
-                "Upload Agregado - Hoje"
+                "Upload"
               ],
               "text": "setAlias()"
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "hide": false,
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "CPN-BNG-JUNIPER-MX80"
           },
           "item": {
-            "filter": "Upload - Agregado"
+            "filter": "Interface [xe-0/0/1][OLT-FIBERHOME-BELA-VISTA]: Bits received"
           },
           "itemTag": {
-            "filter": ""
+            "filter": "alias: OLT-FIBERHOME-BELA-VISTA"
           },
           "macro": {
             "filter": ""
           },
           "options": {
             "count": false,
-            "disableDataAlignment": false,
+            "disableDataAlignment": true,
             "showDisabledItems": false,
             "skipEmptyValues": false,
             "useTrends": "default",
@@ -601,14 +551,14 @@
           }
         }
       ],
-      "title": "CONSUMO",
+      "title": "CONSUMO GERAL",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -621,7 +571,7 @@
             "steps": [
               {
                 "color": "semi-dark-red",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -630,10 +580,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
-        "w": 6,
+        "h": 4,
+        "w": 8,
         "x": 0,
-        "y": 10
+        "y": 7
       },
       "id": 11,
       "options": {
@@ -641,6 +591,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -648,13 +599,15 @@
           "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 50,
           "valueSize": 50
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -663,8 +616,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -686,16 +640,16 @@
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "CPN-BNG-JUNIPER-MX80"
           },
           "item": {
-            "filter": "Upload - Agregado"
+            "filter": "Interface [xe-0/0/1][OLT-FIBERHOME-BELA-VISTA]: Bits received"
           },
           "itemTag": {
-            "filter": ""
+            "filter": "alias: OLT-FIBERHOME-BELA-VISTA"
           },
           "macro": {
             "filter": ""
@@ -727,12 +681,13 @@
           }
         }
       ],
+      "title": "",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -745,7 +700,7 @@
             "steps": [
               {
                 "color": "#2ad813",
-                "value": null
+                "value": 0
               }
             ]
           }
@@ -756,7 +711,7 @@
         "h": 2,
         "w": 8,
         "x": 0,
-        "y": 16
+        "y": 11
       },
       "id": 12,
       "options": {
@@ -764,6 +719,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -771,9 +727,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -782,8 +740,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -805,13 +764,13 @@
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "OLT-FIBERHOME-BELA-VISTA"
           },
           "item": {
-            "filter": "Total de ONUs Online"
+            "filter": "Total ONUs Online (Global)"
           },
           "itemTag": {
             "filter": ""
@@ -846,12 +805,13 @@
           }
         }
       ],
+      "title": "",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -864,7 +824,7 @@
             "steps": [
               {
                 "color": "dark-blue",
-                "value": null
+                "value": 0
               }
             ]
           }
@@ -875,7 +835,7 @@
         "h": 2,
         "w": 8,
         "x": 8,
-        "y": 16
+        "y": 11
       },
       "id": 13,
       "options": {
@@ -883,6 +843,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -890,9 +851,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -901,8 +864,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -924,13 +888,13 @@
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "OLT-FIBERHOME-BELA-VISTA"
           },
           "item": {
-            "filter": "Total de ONUs Provisionadas"
+            "filter": "Total ONUs Provisionadas (Global)"
           },
           "itemTag": {
             "filter": ""
@@ -965,12 +929,13 @@
           }
         }
       ],
+      "title": "",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -983,7 +948,7 @@
             "steps": [
               {
                 "color": "dark-orange",
-                "value": null
+                "value": 0
               }
             ]
           }
@@ -994,7 +959,7 @@
         "h": 2,
         "w": 8,
         "x": 16,
-        "y": 16
+        "y": 11
       },
       "id": 14,
       "options": {
@@ -1002,6 +967,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1009,9 +975,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -1020,8 +988,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -1043,13 +1012,13 @@
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "OLT-FIBERHOME-BELA-VISTA"
           },
           "item": {
-            "filter": "Total de ONUs Offline"
+            "filter": "Total ONUs Offline (Global)"
           },
           "itemTag": {
             "filter": ""
@@ -1084,12 +1053,13 @@
           }
         }
       ],
+      "title": "",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -1104,7 +1074,7 @@
             "steps": [
               {
                 "color": "dark-red",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#EF843C",
@@ -1127,7 +1097,7 @@
         "h": 13,
         "w": 14,
         "x": 0,
-        "y": 18
+        "y": 13
       },
       "id": 16,
       "options": {
@@ -1135,6 +1105,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1142,9 +1113,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -1153,8 +1126,9 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
             {
               "added": true,
@@ -1210,13 +1184,13 @@
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "OLT-FIBERHOME-BELA-VISTA"
           },
           "item": {
-            "filter": "/Média Sinal dBm - PON $Placa$/"
+            "filter": "/^Média Sinal dBm - PON (${slot:regex})\\/[0-9]+(\\/[0-9]+)?$/"
           },
           "itemTag": {
             "filter": ""
@@ -1251,15 +1225,14 @@
           }
         }
       ],
-      "title": "MÉDIA DE SINAL - PLACA $Placa",
-      "transformations": [],
+      "title": "MÉDIA DE SINAL",
       "transparent": true,
       "type": "stat"
     },
     {
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "uid": "afdiqaggew54wd"
       },
       "fieldConfig": {
         "defaults": {
@@ -1273,7 +1246,7 @@
             "steps": [
               {
                 "color": "#21d709",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#EAB839",
@@ -1296,13 +1269,21 @@
         "h": 13,
         "w": 10,
         "x": 14,
-        "y": 18
+        "y": 13
       },
       "id": 15,
       "options": {
         "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
         "minVizHeight": 10,
         "minVizWidth": 0,
+        "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -1312,9 +1293,10 @@
           "values": false
         },
         "showUnfilled": true,
+        "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "application": {
@@ -1323,35 +1305,10 @@
           "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+            "uid": "afdiqaggew54wd"
           },
+          "evaltype": "0",
           "functions": [
-            {
-              "added": true,
-              "def": {
-                "category": "Alias",
-                "defaultParams": [
-                  "/(.*)/",
-                  "$1"
-                ],
-                "name": "replaceAlias",
-                "params": [
-                  {
-                    "name": "regexp",
-                    "type": "string"
-                  },
-                  {
-                    "name": "newAlias",
-                    "type": "string"
-                  }
-                ]
-              },
-              "params": [
-                "/(?![0-9]+\\/[0-9]+\\/[0-9]+)[A-Za-zé\\-\\(\\)\\_\\: ]+/",
-                "PON "
-              ],
-              "text": "replaceAlias(/(.*)/, $1)"
-            },
             {
               "added": true,
               "def": {
@@ -1377,16 +1334,42 @@
                 " "
               ],
               "text": "replaceAlias(/(.*)/, $1)"
+            },
+            {
+              "added": true,
+              "def": {
+                "category": "Alias",
+                "defaultParams": [
+                  "/(.*)/",
+                  "$1"
+                ],
+                "name": "replaceAlias",
+                "params": [
+                  {
+                    "name": "regexp",
+                    "type": "string"
+                  },
+                  {
+                    "name": "newAlias",
+                    "type": "string"
+                  }
+                ]
+              },
+              "params": [
+                "/(?![0-9]+\\/[0-9]+\\/[0-9]+)[A-Za-zé\\-\\(\\)\\_\\: ]+/",
+                "PON "
+              ],
+              "text": "replaceAlias(/(.*)/, $1)"
             }
           ],
           "group": {
-            "filter": "OLT"
+            "filter": "COOPERNET"
           },
           "host": {
-            "filter": "OLT-HUAWEI_GOI"
+            "filter": "OLT-FIBERHOME-BELA-VISTA"
           },
           "item": {
-            "filter": "/ONUs Provisionadas - PON $Placa$/"
+            "filter": "/^ONUs Provisionadas - PON (${slot:regex})\\/[0-9]+(\\/[0-9]+)?$/"
           },
           "itemTag": {
             "filter": ""
@@ -1421,21 +1404,20 @@
           }
         }
       ],
-      "title": "USO DAS PONS - PLACA $Placa",
-      "transformations": [],
+      "title": "USO DAS PONS",
       "transparent": true,
       "type": "bargauge"
     },
     {
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
       },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 26
       },
       "id": 8,
       "options": {
@@ -1447,92 +1429,58 @@
         "content": "<style>\n\nbody{\n\n    margin: auto;\n    font-family: -apple-system, BlinkMacSystemFont, sans-serif;\n    overflow: auto;\n    background: linear-gradient(315deg, #104443 3%, #185971 38%, #1b617a 68%, #104443 98%);\n    animation: gradient 15s ease infinite;\n    background-size: 400% 400%;\n    background-attachment: fixed;\n\n\n\n\n}\n\n@keyframes gradient {\n    0% {\n        background-position: 0% 0%;\n    }\n    50% {\n        background-position: 100% 100%;\n    }\n    100% {\n        background-position: 0% 0%;\n    }\n}\n\n.css-19gv2o1-panel-header{\n\nbackground: rgb(2,0,36);\nbackground: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 26%, rgba(0,212,255,1) 100%);\n\nborder-radius: 0px 66px 0px 66px;\n-webkit-border-radius: 0px 66px 0px 66px;\n-moz-border-radius: 0px 66px 0px 66px;\n\ndisplay: flex;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\n}\n\n.css-1bo04y5-panel-title {\n\ntext-align: center;\ntext-size:50px;\nheight: 60em;\npadding-bottom: 2.5em;\npadding-top: 1.5em;\n\nfont-size:24px;\n\n}\n\n\n\n.css-kvzgb9-panel-content{\nborder: .0px solid #000000;\n}\n\n</style>",
         "mode": "html"
       },
-      "pluginVersion": "10.0.1",
-      "targets": [
-        {
-          "application": {
-            "filter": ""
-          },
-          "countTriggersBy": "",
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
-          },
-          "functions": [],
-          "group": {
-            "filter": ""
-          },
-          "host": {
-            "filter": ""
-          },
-          "item": {
-            "filter": ""
-          },
-          "itemTag": {
-            "filter": ""
-          },
-          "macro": {
-            "filter": ""
-          },
-          "options": {
-            "count": false,
-            "disableDataAlignment": false,
-            "showDisabledItems": false,
-            "skipEmptyValues": false,
-            "useTrends": "default",
-            "useZabbixValueMapping": false
-          },
-          "proxy": {
-            "filter": ""
-          },
-          "queryType": "0",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "schema": 12,
-          "table": {
-            "skipEmptyValues": false
-          },
-          "tags": {
-            "filter": ""
-          },
-          "textFilter": "",
-          "trigger": {
-            "filter": ""
-          }
-        }
-      ],
+      "pluginVersion": "12.3.3",
+      "title": "",
       "transparent": true,
       "type": "text"
     }
   ],
-  "refresh": "30s",
-  "schemaVersion": 38,
-  "style": "dark",
+  "preload": false,
+  "refresh": "5m",
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": [
       {
-        "datasource": {
-          "type": "alexanderzobnin-zabbix-datasource",
-          "uid": "c23c2fa5-1249-4333-a42b-ebea9701bd03"
+        "allValue": ".*",
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "$__all"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
-        "definition": "",
-        "description": "Placas descobertas automaticamente via LLD",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Placa",
-        "multi": false,
-        "name": "Placa",
-        "options": [],
-        "query": {
-          "lldMacro": "{#PONNAME}",
-          "queryType": "2"
-        },
-        "refresh": 1,
-        "regex": "/^([0-9]+\\/[0-9]+)$/",
-        "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
+        "description": "",
+        "includeAll": true,
+        "label": "Slot",
+        "multi": true,
+        "name": "slot",
+        "options": [
+          {
+            "selected": false,
+            "text": "1",
+            "value": "1"
+          },
+          {
+            "selected": false,
+            "text": "2",
+            "value": "2"
+          },
+          {
+            "selected": false,
+            "text": "3",
+            "value": "3"
+          },
+          {
+            "selected": false,
+            "text": "4",
+            "value": "4"
+          }
+        ],
+        "query": "1, 2, 3, 4",
+        "type": "custom"
       }
     ]
   },
@@ -1542,8 +1490,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "OLT_HUAWEI-GOI",
-  "uid": "fbdf0e8b-f2da-4be7-bb3f-c4ed891a3bfc",
-  "version": 21,
-  "weekStart": ""
+  "title": "OLT Fiberhome Bela Vista",
+  "uid": "fbdf0e8b-f2da-4be7-bb3f-c4ed891a3bfd",
+  "version": 15
 }
