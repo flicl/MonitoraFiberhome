@@ -46,7 +46,7 @@ def _run_snmpwalk(
     community: str,
     oid: str,
     port: int = 161,
-    timeout: int = 2,
+    timeout: int = 10,
 ) -> str:
     """
     Execute snmpwalk command and return output.
@@ -66,6 +66,8 @@ def _run_snmpwalk(
         "-On",
         "-v2c",
         "-c", community,
+        "-t", "10",
+        "-r", "1",
         f"{host}:{port}",
         oid,
     ]
@@ -156,7 +158,7 @@ def discover_physical_interfaces(
     host: str,
     community: str,
     port: int = 161,
-    timeout: int = 2,
+    timeout: int = 10,
 ) -> list[NetworkInterface]:
     """
     Discover physical ethernet interfaces via SNMP IF-MIB.

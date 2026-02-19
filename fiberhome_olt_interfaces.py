@@ -27,7 +27,7 @@ from interfaces import discover_physical_interfaces, format_zabbix_lld
 # Configure logging to stderr (stdout is for JSON output)
 if not logging.getLogger().handlers:
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.WARNING,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         stream=sys.stderr,
     )
