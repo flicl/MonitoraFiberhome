@@ -10,10 +10,15 @@ zabbix_export:
       description: |
         Template para monitoramento de OLTs Fiberhome RP1000+ (AN5116-06B / AN5516-01)
 
-        Requer scripts externos em /usr/lib/zabbix/externalscripts/fiberhome/:
-        - GetPONName.py (LLD SNMP)
-        - fiberhome_olt_status.py (Master Item - Status)
-        - fiberhome_olt_signals.py (Master Item - Sinais)
+        Requer scripts externos em /usr/lib/zabbix/externalscripts/:
+        - fiberhome/fiberhome_olt_status.py (Master Item - Status)
+        - fiberhome/fiberhome_olt_signals.py (Master Item - Sinais)
+        - fiberhome/fiberhome_olt_lld.py (LLD PON + Status)
+        - fiberhome/fiberhome_olt_interfaces.py (LLD Interfaces Físicas)
+        - fiberhome_olt_status.py (Wrapper)
+        - fiberhome_olt_signals.py (Wrapper)
+        - fiberhome_olt_lld.py (Wrapper)
+        - fiberhome_olt_interfaces.py (Wrapper)
 
         Macros obrigatórias:
         {$OLT_USER} - Usuário Telnet
@@ -361,6 +366,163 @@ zabbix_export:
                   item:
                     host: Template_OLT_Fiberhome_RP1000
                     key: 'OntOffline.[{#PONNAME}]'
+
+        # ====================
+        # NETWORK INTERFACES DISCOVERY (Physical/Ethernet)
+        # ====================
+        - uuid: 9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f40
+          name: 'Network Interfaces Discovery'
+          type: EXTERNAL
+          key: 'fiberhome_olt_interfaces.py[{HOST.CONN},{$SNMP_COMMUNITY},{$SNMP_PORT}]'
+          delay: 1d
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#IFTYPE}'
+                value: '6|62|117'
+                formulaid: A
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovering physical ethernet interfaces from IF-MIB. Only ethernet (6, 62, 117) interfaces are monitored.'
+          item_prototypes:
+            - uuid: a1b2c3d4e5f6478590a1b2c3d4e5f679
+              name: 'Interface {#IFNAME}: Bits received'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
+              key: 'net.if.in[ifHCInOctets.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: 90d
+              units: bps
+              description: |
+                MIB: IF-MIB
+                The total number of octets received on the interface, including framing characters.
+                This object is a 64-bit version of ifInOctets.
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+
+            - uuid: b2c3d4e5f6784901a2b3c4d5e6f78902
+              name: 'Interface {#IFNAME}: Bits sent'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
+              key: 'net.if.out[ifHCOutOctets.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: 90d
+              units: bps
+              description: |
+                MIB: IF-MIB
+                The total number of octets transmitted out of the interface, including framing characters.
+                This object is a 64-bit version of ifOutOctets.
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+
+            - uuid: c3d4e5f6784901a2b3c4d5e6f789012a
+              name: 'Interface {#IFNAME}: Speed'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}'
+              key: 'net.if.speed[ifHighSpeed.{#SNMPINDEX}]'
+              delay: 5m
+              history: 7d
+              trends: '0'
+              units: bps
+              description: |
+                MIB: IF-MIB
+                An estimate of the interface's current bandwidth in units of 1,000,000 bits per second.
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '1000000'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+
+            - uuid: d4e5f6784901a2b3c4d5e6f7890123b
+              name: 'Interface {#IFNAME}: Operational status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}'
+              key: 'net.if.status[ifOperStatus.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: |
+                MIB: IF-MIB
+                The current operational state of the interface.
+                1 = up, 2 = down, 3 = testing, 4 = unknown, 5 = dormant, 6 = notPresent, 7 = lowerLayerDown
+              valuemap:
+                name: 'IF-MIB::ifOperStatus'
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+              trigger_prototypes:
+                - uuid: e5f6784901a2b3c4d5e6f78901234c
+                  expression: 'last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}])=2 and (last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}],#1)<>last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}],#2))'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/Template_OLT_Fiberhome_RP1000/net.if.status[ifOperStatus.{#SNMPINDEX}])<>2'
+                  name: 'Interface {#IFNAME}: Link down'
+                  opdata: 'Current state: {ITEM.LASTVALUE1}'
+                  priority: AVERAGE
+                  description: 'Interface went down from up state.'
+                  tags:
+                    - tag: scope
+                      value: availability
+
+            - uuid: f6784901a2b3c4d5e6f789012345d
+              name: 'Interface {#IFNAME}: Interface type'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.3.{#SNMPINDEX}'
+              key: 'net.if.type[ifType.{#SNMPINDEX}]'
+              delay: 1h
+              history: 7d
+              trends: '0'
+              description: |
+                MIB: IF-MIB
+                The type of interface. 6=ethernetCsmacd, 62=fastEther, 117=gigabitEthernet
+              valuemap:
+                name: 'IF-MIB::ifType'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+
+          graph_prototypes:
+            - uuid: 0784901a2b3c4d5e6f7890123456e
+              name: 'Interface {#IFNAME}: Network traffic'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 199C0D
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'net.if.in[ifHCInOctets.{#SNMPINDEX}]'
+                - sortorder: '1'
+                  drawtype: BOLD_LINE
+                  color: F63100
+                  item:
+                    host: Template_OLT_Fiberhome_RP1000
+                    key: 'net.if.out[ifHCOutOctets.{#SNMPINDEX}]'
+
       macros:
         - macro: '{$OLT_PASSWORD}'
           value: GEPON
@@ -372,3 +534,30 @@ zabbix_export:
           value: public
         - macro: '{$SNMP_PORT}'
           value: '161'
+      valuemaps:
+        - uuid: vmap_if_oper_status_001
+          name: 'IF-MIB::ifOperStatus'
+          mappings:
+            - value: '1'
+              newvalue: up
+            - value: '2'
+              newvalue: down
+            - value: '3'
+              newvalue: testing
+            - value: '4'
+              newvalue: unknown
+            - value: '5'
+              newvalue: dormant
+            - value: '6'
+              newvalue: notPresent
+            - value: '7'
+              newvalue: lowerLayerDown
+        - uuid: vmap_if_type_001
+          name: 'IF-MIB::ifType'
+          mappings:
+            - value: '6'
+              newvalue: ethernetCsmacd
+            - value: '62'
+              newvalue: fastEther
+            - value: '117'
+              newvalue: gigabitEthernet

@@ -51,6 +51,20 @@ OID_PON_PORT_NAME = "1.3.6.1.4.1.5875.800.3.9.3.4.1.2"
 OID_PON_PORT_DESCRIPTION = "1.3.6.1.4.1.5875.800.3.9.3.4.1.3"
 OID_PON_PORT_TYPE = "1.3.6.1.4.1.5875.800.3.9.3.4.1.1"
 
+# IF-MIB OIDs para interfaces físicas
+OID_IF_NAME = "1.3.6.1.2.1.31.1.1.1.1"
+OID_IF_TYPE = "1.3.6.1.2.1.2.2.1.3"
+OID_IF_ALIAS = "1.3.6.1.2.1.31.1.1.1.18"
+OID_IF_OPER_STATUS = "1.3.6.1.2.1.2.2.1.8"
+OID_IF_HIGH_SPEED = "1.3.6.1.2.1.31.1.1.1.15"
+OID_IF_HC_IN_OCTETS = "1.3.6.1.2.1.31.1.1.1.6"
+OID_IF_HC_OUT_OCTETS = "1.3.6.1.2.1.31.1.1.1.10"
+
+# Interface types (ietf-if-type)
+IF_TYPE_ETHERNET_CSMACD = 6
+IF_TYPE_FAST_ETHERNET = 62
+IF_TYPE_GIGABIT_ETHERNET = 117
+
 
 class ONUStatus(str, Enum):
     """ONU operational status."""

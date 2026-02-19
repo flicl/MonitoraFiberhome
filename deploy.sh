@@ -104,21 +104,25 @@ deploy_scripts() {
     cp "${SOURCE_DIR}/fiberhome_olt_status.py" "${SCRIPTS_DIR}/"
     cp "${SOURCE_DIR}/fiberhome_olt_signals.py" "${SCRIPTS_DIR}/"
     cp "${SOURCE_DIR}/fiberhome_olt_lld.py" "${SCRIPTS_DIR}/"
+    cp "${SOURCE_DIR}/fiberhome_olt_interfaces.py" "${SCRIPTS_DIR}/"
 
     # Set permissions
     chmod +x "${SCRIPTS_DIR}/fiberhome_olt_status.py"
     chmod +x "${SCRIPTS_DIR}/fiberhome_olt_signals.py"
     chmod +x "${SCRIPTS_DIR}/fiberhome_olt_lld.py"
+    chmod +x "${SCRIPTS_DIR}/fiberhome_olt_interfaces.py"
 
     chown -R zabbix:zabbix "${FIBERHOME_DIR}"
     chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_status.py"
     chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_signals.py"
     chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_lld.py"
+    chown zabbix:zabbix "${SCRIPTS_DIR}/fiberhome_olt_interfaces.py"
 
     log_info "Scripts deployed successfully"
     log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_status.py"
     log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_signals.py"
     log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_lld.py"
+    log_info "  - ${SCRIPTS_DIR}/fiberhome_olt_interfaces.py"
     log_info "  - ${FIBERHOME_DIR}/ (module files)"
 }
 
@@ -128,12 +132,14 @@ test_scripts() {
     python3 -m py_compile "${FIBERHOME_DIR}/constants.py"
     python3 -m py_compile "${FIBERHOME_DIR}/parsers.py"
     python3 -m py_compile "${FIBERHOME_DIR}/scrapli_client.py"
+    python3 -m py_compile "${FIBERHOME_DIR}/interfaces.py"
     python3 -m py_compile "${FIBERHOME_DIR}/fiberhome_olt_status.py"
     python3 -m py_compile "${FIBERHOME_DIR}/fiberhome_olt_signals.py"
     # Wrapper scripts
     python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_status.py"
     python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_signals.py"
     python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_lld.py"
+    python3 -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_interfaces.py"
     log_info "Syntax check passed"
 }
 
