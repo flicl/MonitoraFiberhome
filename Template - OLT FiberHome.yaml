@@ -12,12 +12,13 @@ zabbix_export:
         Coleta Telnet baseada em Scrapli async.
         
         Requer scripts externos em /usr/lib/zabbix/externalscripts/:
-        - fiberhome/fiberhome_olt_status.py (Master Item - Status)
-        - fiberhome/fiberhome_olt_signals.py (Master Item - Sinais)
-        - fiberhome/fiberhome_olt_lld.py (LLD PON + Status)
-        - fiberhome_olt_status.py (Wrapper)
-        - fiberhome_olt_signals.py (Wrapper)
-        - fiberhome_olt_lld.py (Wrapper)
+        - fiberhome_olt_status.py (Master Item - Status)
+        - fiberhome_olt_signals.py (Master Item - Sinais)
+        - fiberhome_olt_lld.py (LLD PON)
+        - fiberhome/bootstrap.py
+        - fiberhome/scrapli_client.py
+        - fiberhome/parsers.py
+        - fiberhome/constants.py
         
         Macros obrigatórias:
         {$OLT_USER} - Usuário Telnet

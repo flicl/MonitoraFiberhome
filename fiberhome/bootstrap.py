@@ -1,5 +1,5 @@
 """
-Helpers for bootstrapping Zabbix wrapper scripts with a local virtualenv.
+Helpers for bootstrapping Zabbix entrypoint scripts with a local virtualenv.
 """
 
 import os

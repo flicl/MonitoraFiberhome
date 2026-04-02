@@ -143,9 +143,7 @@ test_scripts() {
     "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/constants.py"
     "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/parsers.py"
     "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/scrapli_client.py"
-    "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/fiberhome_olt_status.py"
-    "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/fiberhome_olt_signals.py"
-    "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/wrapper_utils.py"
+    "${VENV_PYTHON}" -m py_compile "${FIBERHOME_DIR}/bootstrap.py"
     # Wrapper scripts
     "${VENV_PYTHON}" -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_status.py"
     "${VENV_PYTHON}" -m py_compile "${SCRIPTS_DIR}/fiberhome_olt_signals.py"

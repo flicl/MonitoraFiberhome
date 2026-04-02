@@ -36,10 +36,7 @@ Resumo do layout no host Zabbix:
     ├── constants.py
     ├── parsers.py
     ├── scrapli_client.py
-    ├── wrapper_utils.py
-    ├── fiberhome_olt_status.py
-    ├── fiberhome_olt_signals.py
-    └── fiberhome_olt_signals.py
+    └── bootstrap.py
 ```
 
 Fluxo:

@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from fiberhome.wrapper_utils import find_venv_python, reexec_with_venv
+from fiberhome.bootstrap import find_venv_python, reexec_with_venv
 
 
 class WrapperUtilsTests(unittest.TestCase):

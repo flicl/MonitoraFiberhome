@@ -79,9 +79,7 @@ sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome_olt_lld.py
 ```bash
 sudo /usr/lib/zabbix/externalscripts/fiberhome/.venv/bin/python -m py_compile \
   /usr/lib/zabbix/externalscripts/fiberhome/scrapli_client.py \
-  /usr/lib/zabbix/externalscripts/fiberhome/wrapper_utils.py \
-  /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_status.py \
-  /usr/lib/zabbix/externalscripts/fiberhome/fiberhome_olt_signals.py \
+  /usr/lib/zabbix/externalscripts/fiberhome/bootstrap.py \
   /usr/lib/zabbix/externalscripts/fiberhome_olt_status.py \
   /usr/lib/zabbix/externalscripts/fiberhome_olt_signals.py
 ```
@@ -199,10 +197,7 @@ journalctl -u zabbix-server -f
     ├── constants.py
     ├── parsers.py
     ├── scrapli_client.py
-    ├── wrapper_utils.py
-    ├── fiberhome_olt_status.py
-    ├── fiberhome_olt_signals.py
-    └── fiberhome_olt_signals.py
+    └── bootstrap.py
 ```
 
 ### Principais arquivos
