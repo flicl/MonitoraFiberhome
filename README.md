@@ -9,7 +9,6 @@ Compatível com:
 ## O que o projeto entrega
 
 - descoberta automática de PONs via SNMP
-- descoberta de interfaces físicas via IF-MIB
 - coleta de status de ONUs via Telnet
 - coleta de sinais ópticos via Telnet com `scrapli`
 - template pronto para import no Zabbix
@@ -32,7 +31,6 @@ Resumo do layout no host Zabbix:
 ├── fiberhome_olt_status.py
 ├── fiberhome_olt_signals.py
 ├── fiberhome_olt_lld.py
-├── fiberhome_olt_interfaces.py
 └── fiberhome/
     ├── __init__.py
     ├── constants.py
@@ -41,7 +39,7 @@ Resumo do layout no host Zabbix:
     ├── wrapper_utils.py
     ├── fiberhome_olt_status.py
     ├── fiberhome_olt_signals.py
-    └── interfaces.py
+    └── fiberhome_olt_signals.py
 ```
 
 Fluxo:
@@ -149,6 +147,5 @@ python3 /usr/lib/zabbix/externalscripts/fiberhome_olt_status.py \
 ├── fiberhome_olt_status.py
 ├── fiberhome_olt_signals.py
 ├── fiberhome_olt_lld.py
-├── fiberhome_olt_interfaces.py
 └── fiberhome/
 ```

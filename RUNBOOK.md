@@ -46,7 +46,6 @@ sudo mkdir -p /usr/lib/zabbix/externalscripts/fiberhome
 sudo cp fiberhome_olt_status.py /usr/lib/zabbix/externalscripts/
 sudo cp fiberhome_olt_signals.py /usr/lib/zabbix/externalscripts/
 sudo cp fiberhome_olt_lld.py /usr/lib/zabbix/externalscripts/
-sudo cp fiberhome_olt_interfaces.py /usr/lib/zabbix/externalscripts/
 ```
 
 ### 3. Copiar módulos para `fiberhome/`
@@ -69,12 +68,10 @@ sudo /usr/lib/zabbix/externalscripts/fiberhome/.venv/bin/python -m pip install -
 sudo chmod +x /usr/lib/zabbix/externalscripts/fiberhome_olt_status.py
 sudo chmod +x /usr/lib/zabbix/externalscripts/fiberhome_olt_signals.py
 sudo chmod +x /usr/lib/zabbix/externalscripts/fiberhome_olt_lld.py
-sudo chmod +x /usr/lib/zabbix/externalscripts/fiberhome_olt_interfaces.py
 sudo chown -R zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome
 sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome_olt_status.py
 sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome_olt_signals.py
 sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome_olt_lld.py
-sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/fiberhome_olt_interfaces.py
 ```
 
 ### 6. Validar instalação
@@ -118,13 +115,6 @@ python3 /usr/lib/zabbix/externalscripts/fiberhome_olt_signals.py \
 ```bash
 python3 /usr/lib/zabbix/externalscripts/fiberhome_olt_lld.py \
   <IP_OLT> <SNMP_COMMUNITY> <HOSTNAME> <USER> <PASSWORD> <TELNET_PORT> <SNMP_PORT> | jq .
-```
-
-### Teste do LLD de interfaces
-
-```bash
-python3 /usr/lib/zabbix/externalscripts/fiberhome_olt_interfaces.py \
-  <IP_OLT> <SNMP_COMMUNITY> <SNMP_PORT> | jq .
 ```
 
 ### Teste do Python da `.venv`
@@ -204,7 +194,6 @@ journalctl -u zabbix-server -f
 ├── fiberhome_olt_status.py
 ├── fiberhome_olt_signals.py
 ├── fiberhome_olt_lld.py
-├── fiberhome_olt_interfaces.py
 └── fiberhome/
     ├── __init__.py
     ├── constants.py
@@ -213,7 +202,7 @@ journalctl -u zabbix-server -f
     ├── wrapper_utils.py
     ├── fiberhome_olt_status.py
     ├── fiberhome_olt_signals.py
-    └── interfaces.py
+    └── fiberhome_olt_signals.py
 ```
 
 ### Principais arquivos
@@ -221,7 +210,6 @@ journalctl -u zabbix-server -f
 - `fiberhome_olt_status.py`: wrapper do master item de status
 - `fiberhome_olt_signals.py`: wrapper do master item de sinais
 - `fiberhome_olt_lld.py`: descoberta de PONs via SNMP
-- `fiberhome_olt_interfaces.py`: descoberta de interfaces físicas via SNMP
 - `fiberhome/scrapli_client.py`: cliente Telnet assíncrono com `scrapli`
 
 ### CLI da FiberHome
